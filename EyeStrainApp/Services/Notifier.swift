@@ -17,6 +17,7 @@ class Notifier {
     private var activeDays: Set<Int> = []
     private var clockOutUseOverlay: Bool?
     var overlayWindows: [NSWindow] = []
+    var miniOverlayWindows: [NSWindow] = []
 
     private init() {
         updateSettings()
@@ -54,6 +55,30 @@ class Notifier {
                 self?.overlayWindows.forEach { $0.close() }
                 self?.overlayWindows.removeAll()
             }
+        }
+    }
+
+    func showMiniOverlay(text: String, duration: TimeInterval = 3.15) {
+        // Close any existing mini overlay windows
+        miniOverlayWindows.forEach { $0.close() }
+        miniOverlayWindows.removeAll()
+
+        // Create a mini overlay window for each screen
+        let screens = NSScreen.screens
+        for screen in screens {
+            let window = generateMiniOverlay(
+                text: text,
+                screen: screen,
+                duration: duration,
+                onDismiss: {
+                    [weak self] in
+                    self?.miniOverlayWindows.forEach { $0.close() }
+                    self?.miniOverlayWindows.removeAll()
+                }
+            )
+
+            window.makeKeyAndOrderFront(nil)
+            miniOverlayWindows.append(window)
         }
     }
 
