@@ -53,7 +53,7 @@ struct GeneralSettingsTab: View {
             SettingItem(
                 title: "Launch at Login",
                 description:
-                "Automatically start Eye Strain App when you log in.",
+                "Automatically start Lucid when you log in.",
                 icon: "power"
             ) {
                 Toggle("", isOn: launchAtLoginBinding)

@@ -3,14 +3,14 @@ import SwiftUI
 
 struct MainScene: Scene {
     var body: some Scene {
-        Window("Eye Strain Settings", id: "settings") {
+        Window("Lucid Settings", id: "settings") {
             SettingsWindow()
                 .background(VisualEffect().ignoresSafeArea())
                 .frame(
                     minWidth: 800,
                     minHeight: 500
                 )
-                .toolbar { Text("Eye Strain Settings").fontWeight(.bold).font(.title3) }
+                .toolbar { Text("Lucid Settings").fontWeight(.bold).font(.title3) }
         }
         .windowResizability(WindowResizability.contentSize)
         .defaultSize(

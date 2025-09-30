@@ -1,4 +1,4 @@
-# Eye Strain App
+# Lucid
 
 A macOS menu bar application designed to help reduce eye strain, maintain good posture, and encourage healthy work habits through customizable reminders and overlays.
 
