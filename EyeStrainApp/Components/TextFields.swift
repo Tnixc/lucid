@@ -102,6 +102,13 @@ struct UINumberFieldCompact: View {
     @State private var isHovered = false
     @State private var isFocused = false
 
+    private var zeroPaddedFormatter: NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.minimumIntegerDigits = 2
+        formatter.maximumIntegerDigits = 2
+        return formatter
+    }
+
     init(
         value: Binding<Int>,
         placeholder: String = "",
@@ -113,7 +120,7 @@ struct UINumberFieldCompact: View {
     }
 
     var body: some View {
-        TextField(placeholder, value: $value, formatter: NumberFormatter(), onEditingChanged: { editing in
+        TextField(placeholder, value: $value, formatter: zeroPaddedFormatter, onEditingChanged: { editing in
             withAnimation(.easeInOut(duration: 0.15)) {
                 isFocused = editing
             }
