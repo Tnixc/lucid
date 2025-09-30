@@ -3,6 +3,7 @@ import SwiftUI
 struct MenuBarView: View {
     @EnvironmentObject private var menuBarModel: MenuBarModel
     @Environment(\.openWindow) private var openWindow
+    @AppStorage("alertsEnabled") private var alertsEnabled: Bool = true
 
     var body: some View {
         VStack(spacing: 16) {
@@ -56,6 +57,15 @@ struct MenuBarView: View {
                     action: {
                         menuBarModel.resetTimer()
                     }
+                )
+
+                Divider()
+                    .padding(.horizontal, 12)
+
+                ControlCenterToggle(
+                    icon: alertsEnabled ? "bell.fill" : "bell.slash.fill",
+                    label: "Alerts",
+                    isOn: $alertsEnabled
                 )
             }
             .background(
@@ -199,6 +209,53 @@ struct ControlCenterIconButton: View {
                 }
             }
         )
+    }
+}
+
+// MARK: - Control Center Toggle Component
+
+struct ControlCenterToggle: View {
+    let icon: String
+    let label: String
+    @Binding var isOn: Bool
+
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: {
+            isOn.toggle()
+        }) {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(isOn ? .primary : .secondary)
+                    .frame(width: 24, height: 24)
+
+                Text(label)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(isOn ? .primary : .secondary)
+
+                Spacer()
+
+                Toggle("", isOn: $isOn)
+                    .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
+                    .labelsHidden()
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(isHovered ? Color.primary.opacity(0.08) : Color.clear)
+            )
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .focusable(false)
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
+            }
+        }
     }
 }
 

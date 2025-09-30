@@ -27,6 +27,11 @@ class Notifier {
     }
 
     func showOverlay(title: String, message: String, dismissAfter: TimeInterval, autoDismiss: Bool = true) {
+        // Check if alerts are enabled
+        guard defaults.bool(forKey: "alertsEnabled") != false else {
+            return
+        }
+
         // Close any existing overlay windows
         overlayWindows.forEach { $0.close() }
         overlayWindows.removeAll()
@@ -61,6 +66,11 @@ class Notifier {
     }
 
     func showMiniOverlay(text: String, icon: String? = nil, duration: TimeInterval = 3.15, holdDuration: TimeInterval = 1.5) {
+        // Check if alerts are enabled
+        guard defaults.bool(forKey: "alertsEnabled") != false else {
+            return
+        }
+
         // Close any existing mini overlay windows
         miniOverlayWindows.forEach { $0.close() }
         miniOverlayWindows.removeAll()
