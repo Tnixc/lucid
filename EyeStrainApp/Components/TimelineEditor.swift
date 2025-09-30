@@ -80,9 +80,10 @@ struct TimelineEditor: View {
             GeometryReader { geometry in
                 let width = geometry.size.width
                 ZStack(alignment: .leading) {
-                    ForEach(0 ..< 24) { hour in
+                    ForEach(0 ..< 25) { hour in
                         Text("\(hour)")
                             .font(.caption2)
+                            .monospacedDigit()
                             .foregroundColor(.secondary)
                             .frame(width: 20)
                             .offset(x: (CGFloat(hour) / 24.0) * width - 10)
@@ -98,14 +99,14 @@ struct TimelineEditor: View {
                 ZStack(alignment: .leading) {
                     // Background timeline
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.secondary.opacity(0.1))
+                        .fill(Color(nsColor: .controlBackgroundColor).opacity(0.5))
                         .frame(height: timelineHeight)
 
                     // Hour markers
                     ZStack(alignment: .leading) {
-                        ForEach(0 ..< 24) { hour in
+                        ForEach(1 ..< 24) { hour in
                             Rectangle()
-                                .fill(Color.secondary.opacity(hour % 6 == 0 ? 0.3 : 0.15))
+                                .fill(Color(nsColor: .separatorColor).opacity(hour % 6 == 0 ? 0.6 : 0.3))
                                 .frame(width: 1, height: timelineHeight)
                                 .offset(x: (CGFloat(hour) / 24.0) * width)
                         }
@@ -177,23 +178,26 @@ struct TimelineEditor: View {
                             .frame(width: 35, height: 20)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                                    .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
                             )
 
                         Text(":")
                             .foregroundColor(.secondary)
+                            .monospacedDigit()
 
                         NumericTextField(value: startMinuteBinding, range: 0 ... 59)
                             .frame(width: 35, height: 20)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                                    .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
                             )
                     }
 
                     Text(formatTime(hour: startHour, minute: startMinute))
                         .font(.caption)
+                        .monospacedDigit()
                         .foregroundColor(.secondary)
+                        .contentTransition(.numericText())
                 }
 
                 Spacer()
@@ -215,22 +219,26 @@ struct TimelineEditor: View {
                             .frame(width: 35, height: 20)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                                    .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
                             )
 
                         Text(":")
                             .foregroundColor(.secondary)
+                            .monospacedDigit()
 
                         NumericTextField(value: endMinuteBinding, range: 0 ... 59)
                             .frame(width: 35, height: 20)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                                    .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
                             )
                     }
+
                     Text(formatTime(hour: endHour, minute: endMinute))
                         .font(.caption)
+                        .monospacedDigit()
                         .foregroundColor(.secondary)
+                        .contentTransition(.numericText())
                 }
             }
             .padding(.horizontal, 4)
@@ -286,19 +294,31 @@ struct TimelineEditor: View {
 
                 // From start to end of timeline
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.accentColor.opacity(0.25))
+                    .fill(Color.accentColor.opacity(0.3))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
+                    )
                     .frame(width: width - startPosition, height: timelineHeight)
                     .offset(x: startPosition)
 
                 // From beginning to end position
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.accentColor.opacity(0.25))
+                    .fill(Color.accentColor.opacity(0.3))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
+                    )
                     .frame(width: endPosition, height: timelineHeight)
                     .offset(x: 0)
             } else {
                 // Single bar from start to end
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.accentColor.opacity(0.25))
+                    .fill(Color.accentColor.opacity(0.3))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
+                    )
                     .frame(width: endPosition - startPosition, height: timelineHeight)
                     .offset(x: startPosition)
             }
