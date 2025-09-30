@@ -420,7 +420,7 @@ struct TimelineEditor: View {
                 .animation(.spring(response: 0.3), value: isDragging)
                 .offset(y: -10)
         }
-        .offset(x: (xPosition - handleWidth / 2) - 26)
+        .offset(x: (xPosition - handleWidth / 2) - 24)
         .frame(height: timelineHeight, alignment: .center)
     }
 

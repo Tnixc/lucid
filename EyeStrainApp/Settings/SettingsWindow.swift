@@ -15,11 +15,16 @@ struct SettingsWindow: View {
     @State private var selectedTab: Tabs = .general
 
     var body: some View {
-        HStack {
-            sidebar.padding(.bottom, Style.Layout.padding)
-            Spacer()
-            tabContent.padding(.bottom, Style.Layout.padding)
-            Spacer()
+        VStack(spacing: 0) {
+            // Toolbar border divider
+            Divider()
+            
+            HStack {
+                sidebar.padding(.bottom, Style.Layout.padding)
+                Spacer()
+                tabContent.padding(.bottom, Style.Layout.padding)
+                Spacer()
+            }
         }
         .onAppear {
             AppState.shared.isSettingsWindowOpen = true
@@ -32,6 +37,7 @@ struct SettingsWindow: View {
     var sidebar: some View {
         HStack {
             VStack(spacing: Style.Layout.paddingSM) {
+              Spacer().frame(height: Style.Layout.paddingSM)
                 SettingsTabButton(
                     title: "General",
                     icon: "gear",
