@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3937B4EB2E8C10F800FB8682 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 3937B4EA2E8C10F800FB8682 /* SQLite */; };
 		3937B4EE2E8C113200FB8682 /* SettingsAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 3937B4ED2E8C113200FB8682 /* SettingsAccess */; };
 		3972F91E2E8C284100AFBB8E /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 3972F91D2E8C284100AFBB8E /* KeyboardShortcuts */; };
 /* End PBXBuildFile section */
@@ -25,7 +24,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3937B4EB2E8C10F800FB8682 /* SQLite in Frameworks */,
 				3937B4EE2E8C113200FB8682 /* SettingsAccess in Frameworks */,
 				3972F91E2E8C284100AFBB8E /* KeyboardShortcuts in Frameworks */,
 			);
@@ -98,7 +96,6 @@
 			);
 			mainGroup = 4180AEA12839753E0054FEA9;
 			packageReferences = (
-				3937B4E92E8C10F800FB8682 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
 				3937B4EC2E8C113200FB8682 /* XCRemoteSwiftPackageReference "SettingsAccess" */,
 				3972F91C2E8C284100AFBB8E /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 			);
@@ -339,14 +336,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		3937B4E92E8C10F800FB8682 /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.15.4;
-			};
-		};
 		3937B4EC2E8C113200FB8682 /* XCRemoteSwiftPackageReference "SettingsAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/orchetect/SettingsAccess";
@@ -366,11 +355,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		3937B4EA2E8C10F800FB8682 /* SQLite */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3937B4E92E8C10F800FB8682 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
-			productName = SQLite;
-		};
 		3937B4ED2E8C113200FB8682 /* SettingsAccess */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 3937B4EC2E8C113200FB8682 /* XCRemoteSwiftPackageReference "SettingsAccess" */;
