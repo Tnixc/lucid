@@ -6,6 +6,7 @@ func generateOverlay(
     message: String,
     seconds: Double,
     screen: NSScreen,
+    autoDismiss: Bool = true,
     onDismiss: @escaping () -> Void
 ) -> NSWindow {
     let window = NSWindow(
@@ -29,6 +30,7 @@ func generateOverlay(
             title: title,
             message: message,
             duration: seconds,
+            autoDismiss: autoDismiss,
             onDismiss: onDismiss
         )
     )
@@ -43,6 +45,7 @@ func generateOverlay(
 struct OverlayView: View {
     let title: String
     let message: String
+    let autoDismiss: Bool
     let onDismiss: () -> Void
     @State private var remainingTime: TimeInterval
     @State private var currentTime: String = ""
@@ -73,10 +76,12 @@ struct OverlayView: View {
         title: String,
         message: String,
         duration: TimeInterval,
+        autoDismiss: Bool = true,
         onDismiss: @escaping () -> Void
     ) {
         self.title = title
         self.message = message
+        self.autoDismiss = autoDismiss
         self.onDismiss = onDismiss
         _remainingTime = State(initialValue: duration)
         _visibleButtonIndex = State(initialValue: Int.random(in: 0 ..< 12))
@@ -108,7 +113,7 @@ struct OverlayView: View {
 
                     // Centered content with clock above
                     VStack(spacing: 30) {
-                        Text(currentTime)
+                        Text("The time is " + currentTime)
                             .font(.title)
                             .fontWeight(.medium)
                             .foregroundStyle(.secondary)
@@ -121,18 +126,20 @@ struct OverlayView: View {
                             Text(message)
                                 .font(.title2)
 
-                            HStack(spacing: 0) {
-                                Text("Dismisses in ")
-                                    .font(.title2)
-                                    .foregroundStyle(.secondary)
-                                Text(formatTime(remainingTime))
-                                    .font(.title2)
-                                    .foregroundStyle(.secondary)
-                                    .contentTransition(
-                                        .numericText(countsDown: true)
-                                    )
-                                    .animation(.snappy, value: remainingTime)
-                                    .monospacedDigit()
+                            if autoDismiss {
+                                HStack(spacing: 0) {
+                                    Text("Dismisses in ")
+                                        .font(.title2)
+                                        .foregroundStyle(.secondary)
+                                    Text(formatTime(remainingTime))
+                                        .font(.title2)
+                                        .foregroundStyle(.secondary)
+                                        .contentTransition(
+                                            .numericText(countsDown: true)
+                                        )
+                                        .animation(.snappy, value: remainingTime)
+                                        .monospacedDigit()
+                                }
                             }
                         }
                     }
@@ -293,11 +300,13 @@ struct OverlayView: View {
             .onReceive(timer) { _ in
                 guard hasAppeared else { return }
                 updateCurrentTime()
-                if remainingTime > 0 {
-                    remainingTime -= 1
-                } else {
-                    hasAppeared = false
-                    onDismiss()
+                if autoDismiss {
+                    if remainingTime > 0 {
+                        remainingTime -= 1
+                    } else {
+                        hasAppeared = false
+                        onDismiss()
+                    }
                 }
             }
         )

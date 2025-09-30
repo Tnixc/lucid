@@ -39,6 +39,7 @@ class Notifier {
                 message: message,
                 seconds: dismissAfter,
                 screen: screen,
+                autoDismiss: autoDismiss,
                 onDismiss: {
                     [weak self] in
                     self?.overlayWindows.forEach { $0.close() }
