@@ -16,7 +16,7 @@ class Notifier {
     private let defaults = UserDefaults.standard
     private var activeDays: Set<Int> = []
     private var clockOutUseOverlay: Bool?
-    var overlayWindow: NSWindow?
+    var overlayWindows: [NSWindow] = []
 
     private init() {
         updateSettings()
@@ -25,23 +25,34 @@ class Notifier {
     }
 
     func showOverlay(title: String, message: String, dismissAfter: TimeInterval, autoDismiss: Bool = true) {
-        overlayWindow = generateOverlay(
-            title: title,
-            message: message,
-            seconds: dismissAfter,
-            onDismiss: {
-                [weak self] in
-                self?.overlayWindow?.close()
-                self?.overlayWindow = nil
-            }
-        )
+        // Close any existing overlay windows
+        overlayWindows.forEach { $0.close() }
+        overlayWindows.removeAll()
 
-        overlayWindow?.makeKeyAndOrderFront(nil)
+        // Create an overlay window for each screen
+        let screens = NSScreen.screens
+        for screen in screens {
+            let window = generateOverlay(
+                title: title,
+                message: message,
+                seconds: dismissAfter,
+                screen: screen,
+                onDismiss: {
+                    [weak self] in
+                    self?.overlayWindows.forEach { $0.close() }
+                    self?.overlayWindows.removeAll()
+                }
+            )
+
+            window.makeKeyAndOrderFront(nil)
+            overlayWindows.append(window)
+        }
+
         if autoDismiss {
             DispatchQueue.main.asyncAfter(deadline: .now() + dismissAfter) {
                 [weak self] in
-                self?.overlayWindow?.close()
-                self?.overlayWindow = nil
+                self?.overlayWindows.forEach { $0.close() }
+                self?.overlayWindows.removeAll()
             }
         }
     }
@@ -73,9 +84,9 @@ class Notifier {
 
     private func setupKeyboardShortcuts() {
         KeyboardShortcuts.onKeyDown(for: .dismissOverlay) { [weak self] in
-            guard let self = self, let window = self.overlayWindow else { return }
-            window.close()
-            self.overlayWindow = nil
+            guard let self = self else { return }
+            self.overlayWindows.forEach { $0.close() }
+            self.overlayWindows.removeAll()
         }
     }
 

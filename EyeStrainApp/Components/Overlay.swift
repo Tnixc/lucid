@@ -4,9 +4,9 @@ func generateOverlay(
     title: String,
     message: String,
     seconds: Double,
+    screen: NSScreen,
     onDismiss: @escaping () -> Void
 ) -> NSWindow {
-    let screen = NSScreen.main!
     let window = NSWindow(
         contentRect: screen.frame,
         styleMask: [.borderless, .fullSizeContentView],
@@ -55,8 +55,8 @@ struct OverlayView: View {
         switch materialString {
         case "Ultra Thin": return .hudWindow
         case "Thin": return .sidebar
-        case "Medium": return .headerView
-        case "Thick": return .underWindowBackground
+        case "Medium": return .popover
+        case "Thick": return .headerView
         case "Ultra Thick": return .sheet
         default: return .sidebar
         }
