@@ -88,7 +88,7 @@ struct EyeStrainSettingsTab: View {
                 description: "Show a preview of the eye strain reminder overlay.",
                 icon: "eye"
             ) {
-              UIButton(action: { Notifier.shared.showEyeStrainReminder() }, label: "Preview", width: 120)
+                UIButton(action: { Notifier.shared.showEyeStrainReminder() }, label: "Preview", width: 120)
             }
 
             Spacer()

@@ -34,7 +34,7 @@ struct UIButton: View {
                 }
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.system(size: Style.Icon.sizeSM))
+                        .font(.system(size: Style.Icon.sizeSM)).frame(width: Style.Icon.size)
                 }
                 if label != nil {
                     Text(label ?? "")
@@ -96,7 +96,7 @@ struct UIButtonPlain: View {
                 }
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.system(size: Style.Icon.sizeSM))
+                        .font(.system(size: Style.Icon.sizeSM)).frame(width: Style.Icon.size)
                 }
                 if label != nil {
                     Text(label ?? "")

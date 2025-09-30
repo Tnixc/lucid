@@ -48,6 +48,18 @@ struct OverlayView: View {
 
     private var clickToDismiss: Bool { defaults.object(forKey: "eyeStrainClickToDismiss") as? Bool ?? true }
 
+    private var overlayMaterial: NSVisualEffectView.Material {
+        let materialString = defaults.string(forKey: "overlayMaterial") ?? "Medium"
+        switch materialString {
+        case "Ultra Thin": return .hudWindow
+        case "Thin": return .toolTip
+        case "Medium": return .fullScreenUI
+        case "Thick": return .sheet
+        case "Ultra Thick": return .windowBackground
+        default: return .fullScreenUI
+        }
+    }
+
     init(
         title: String,
         message: String,
@@ -70,7 +82,7 @@ struct OverlayView: View {
     var body: some View {
         var view = AnyView(
             ZStack {
-                VisualEffectView(material: .fullScreenUI, blendingMode: .behindWindow)
+                VisualEffectView(material: overlayMaterial, blendingMode: .behindWindow)
 
                 VStack(spacing: 20) {
                     Text(title)

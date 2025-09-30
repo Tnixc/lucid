@@ -2,12 +2,37 @@ import KeyboardShortcuts
 import ServiceManagement
 import SwiftUI
 
+enum OverlayMaterial: String, CaseIterable, Hashable {
+    case ultraThin = "Ultra Thin"
+    case thin = "Thin"
+    case medium = "Medium"
+    case thick = "Thick"
+    case ultraThick = "Ultra Thick"
+
+    var nsMaterial: NSVisualEffectView.Material {
+        switch self {
+        case .ultraThin: return .hudWindow
+        case .thin: return .toolTip
+        case .medium: return .fullScreenUI
+        case .thick: return .sheet
+        case .ultraThick: return .windowBackground
+        }
+    }
+
+    static func fromString(_ string: String) -> OverlayMaterial {
+        return OverlayMaterial.allCases.first { $0.rawValue == string } ?? .medium
+    }
+}
+
 struct GeneralSettingsTab: View {
     @State private var launchAtLogin: Bool
+    @State private var overlayMaterial: OverlayMaterial
 
     init() {
         let defaults = UserDefaults.standard
         _launchAtLogin = State(initialValue: defaults.bool(forKey: "launchAtLogin"))
+        let materialString = defaults.string(forKey: "overlayMaterial") ?? "Medium"
+        _overlayMaterial = State(initialValue: OverlayMaterial.fromString(materialString))
     }
 
     var body: some View {
@@ -32,6 +57,20 @@ struct GeneralSettingsTab: View {
                 KeyboardShortcuts.Recorder(for: .dismissOverlay)
             }
 
+            SettingItem(
+                title: "Overlay Opacity",
+                description: "Material thickness for overlay background.",
+                icon: "circle.lefthalf.filled"
+            ) {
+                UIDropdown(
+                    selectedOption: overlayMaterialBinding,
+                    options: OverlayMaterial.allCases,
+                    optionToString: { $0.rawValue },
+                    width: 150,
+                    height: 40
+                )
+            }
+
             Spacer()
             InfoBox {
                 HStack {
@@ -51,6 +90,16 @@ struct GeneralSettingsTab: View {
                 self.launchAtLogin = $0
                 UserDefaults.standard.set($0, forKey: "launchAtLogin")
                 self.setLaunchAtLogin($0)
+            }
+        )
+    }
+
+    private var overlayMaterialBinding: Binding<OverlayMaterial> {
+        Binding(
+            get: { self.overlayMaterial },
+            set: {
+                self.overlayMaterial = $0
+                UserDefaults.standard.set($0.rawValue, forKey: "overlayMaterial")
             }
         )
     }
