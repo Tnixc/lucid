@@ -107,8 +107,8 @@ struct GeneralSettingsTab: View {
             Spacer()
             InfoBox {
                 HStack {
-                    Image(systemName: "hand.raised.slash")
-                    Text("Eye Strain App is designed for your privacy. No data leaves your device.")
+                    Image(systemName: "info.circle.fill")
+                    Text("Questions/bugs? Email me at enochlauenoch@gmail.com")
                         .foregroundStyle(.secondary)
                     Spacer()
                 }

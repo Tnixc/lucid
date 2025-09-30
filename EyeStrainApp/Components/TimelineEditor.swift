@@ -44,13 +44,20 @@ struct NumericTextField: NSViewRepresentable {
             isEditing = false
             if let textField = obj.object as? NSTextField {
                 if let intValue = Int(textField.stringValue) {
-                    parent.value = max(parent.range.lowerBound, min(parent.range.upperBound, intValue))
+                    parent.value = max(
+                        parent.range.lowerBound,
+                        min(parent.range.upperBound, intValue)
+                    )
                 }
                 textField.stringValue = String(format: "%02d", parent.value)
             }
         }
 
-        func control(_ control: NSControl, textView _: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
+        func control(
+            _ control: NSControl,
+            textView _: NSTextView,
+            doCommandBy commandSelector: Selector
+        ) -> Bool {
             if commandSelector == #selector(NSResponder.insertNewline(_:)) {
                 control.window?.makeFirstResponder(nil)
                 return true
@@ -68,6 +75,7 @@ struct TimelineEditor: View {
 
     @State private var isDraggingStart = false
     @State private var isDraggingEnd = false
+    @State private var lastHapticMinute: Int?
 
     private let timelineHeight: CGFloat = 60
     private let handleWidth: CGFloat = 8
@@ -106,7 +114,11 @@ struct TimelineEditor: View {
                     ZStack(alignment: .leading) {
                         ForEach(1 ..< 24) { hour in
                             Rectangle()
-                                .fill(Color(nsColor: .separatorColor).opacity(hour % 6 == 0 ? 0.6 : 0.3))
+                                .fill(
+                                    Color(nsColor: .separatorColor).opacity(
+                                        hour % 6 == 0 ? 0.6 : 0.3
+                                    )
+                                )
                                 .frame(width: 1, height: timelineHeight)
                                 .offset(x: (CGFloat(hour) / 24.0) * width)
                         }
@@ -121,7 +133,7 @@ struct TimelineEditor: View {
                         minute: startMinute,
                         width: width,
                         isDragging: isDraggingStart,
-                        color: Color(red: 0.3, green: 0.6, blue: 1.0)
+                        color: Style.Colors.nightTime
                     )
                     .gesture(
                         DragGesture()
@@ -135,6 +147,7 @@ struct TimelineEditor: View {
                             }
                             .onEnded { _ in
                                 isDraggingStart = false
+                                lastHapticMinute = nil
                             }
                     )
 
@@ -144,7 +157,7 @@ struct TimelineEditor: View {
                         minute: endMinute,
                         width: width,
                         isDragging: isDraggingEnd,
-                        color: Color(red: 1.0, green: 0.6, blue: 0.2)
+                        color: Style.Colors.morningTime
                     )
                     .gesture(
                         DragGesture()
@@ -158,6 +171,7 @@ struct TimelineEditor: View {
                             }
                             .onEnded { _ in
                                 isDraggingEnd = false
+                                lastHapticMinute = nil
                             }
                     )
                 }
@@ -170,7 +184,7 @@ struct TimelineEditor: View {
                 // Start time input
                 HStack(spacing: 8) {
                     Image(systemName: "moon.fill")
-                        .foregroundColor(Color(red: 0.3, green: 0.6, blue: 1.0))
+                        .foregroundColor(Style.Colors.nightTime)
                         .font(.caption)
 
                     HStack(spacing: 4) {
@@ -211,7 +225,7 @@ struct TimelineEditor: View {
                 // End time input
                 HStack(spacing: 8) {
                     Image(systemName: "sunrise.fill")
-                        .foregroundColor(Color(red: 1.0, green: 0.6, blue: 0.2))
+                        .foregroundColor(Style.Colors.morningTime)
                         .font(.caption)
 
                     HStack(spacing: 4) {
@@ -282,8 +296,13 @@ struct TimelineEditor: View {
     }
 
     private func activeBar(width: CGFloat) -> some View {
-        let startPosition = position(hour: startHour, minute: startMinute, width: width)
+        let startPosition = position(
+            hour: startHour,
+            minute: startMinute,
+            width: width
+        )
         let endPosition = position(hour: endHour, minute: endMinute, width: width)
+        let handleRadius = handleWidth / 2
 
         // Handle wrapping around midnight
         let wrapsAround = endPosition < startPosition
@@ -293,34 +312,66 @@ struct TimelineEditor: View {
                 // Two bars: start to end of timeline, and beginning to end
 
                 // From start to end of timeline
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.accentColor.opacity(0.3))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
+                UnevenRoundedRectangle(
+                    topLeadingRadius: handleRadius,
+                    bottomLeadingRadius: handleRadius,
+                    bottomTrailingRadius: 8,
+                    topTrailingRadius: 8
+                )
+                .fill(
+                    Gradient(colors: [Style.Colors.nightTime, Style.Colors.morningTime]).opacity(0.3)
+                )
+                .overlay(
+                    UnevenRoundedRectangle(
+                        topLeadingRadius: handleRadius,
+                        bottomLeadingRadius: handleRadius,
+                        bottomTrailingRadius: 8,
+                        topTrailingRadius: 8
                     )
-                    .frame(width: width - startPosition, height: timelineHeight)
-                    .offset(x: startPosition)
+                    .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
+                )
+                .frame(width: width - startPosition, height: timelineHeight)
+                .offset(x: startPosition)
 
                 // From beginning to end position
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.accentColor.opacity(0.3))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
+                UnevenRoundedRectangle(
+                    topLeadingRadius: 8,
+                    bottomLeadingRadius: 8,
+                    bottomTrailingRadius: handleRadius,
+                    topTrailingRadius: handleRadius
+                )
+                .fill(Style.Colors.barFill.opacity(0.3))
+                .overlay(
+                    UnevenRoundedRectangle(
+                        topLeadingRadius: 8,
+                        bottomLeadingRadius: 8,
+                        bottomTrailingRadius: handleRadius,
+                        topTrailingRadius: handleRadius
                     )
-                    .frame(width: endPosition, height: timelineHeight)
-                    .offset(x: 0)
+                    .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
+                )
+                .frame(width: endPosition, height: timelineHeight)
+                .offset(x: 0)
             } else {
                 // Single bar from start to end
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.accentColor.opacity(0.3))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
+                UnevenRoundedRectangle(
+                    topLeadingRadius: handleRadius,
+                    bottomLeadingRadius: handleRadius,
+                    bottomTrailingRadius: handleRadius,
+                    topTrailingRadius: handleRadius
+                )
+                .fill(Style.Colors.barFill.opacity(0.3))
+                .overlay(
+                    UnevenRoundedRectangle(
+                        topLeadingRadius: handleRadius,
+                        bottomLeadingRadius: handleRadius,
+                        bottomTrailingRadius: handleRadius,
+                        topTrailingRadius: handleRadius
                     )
-                    .frame(width: endPosition - startPosition, height: timelineHeight)
-                    .offset(x: startPosition)
+                    .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
+                )
+                .frame(width: endPosition - startPosition, height: timelineHeight)
+                .offset(x: startPosition)
             }
         }
         .frame(width: width, height: timelineHeight, alignment: .leading)
@@ -340,8 +391,9 @@ struct TimelineEditor: View {
             Text(formatTime(hour: hour, minute: minute))
                 .font(.system(size: 10, weight: .semibold))
                 .monospacedDigit()
+                .animation(.snappy)
                 .contentTransition(.numericText())
-                .foregroundColor(color)
+                .foregroundColor(Color.primary)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(
@@ -368,7 +420,7 @@ struct TimelineEditor: View {
                 .animation(.spring(response: 0.3), value: isDragging)
                 .offset(y: -10)
         }
-        .offset(x: (xPosition - handleWidth / 2) - 22)
+        .offset(x: (xPosition - handleWidth / 2) - 26)
         .frame(height: timelineHeight, alignment: .center)
     }
 
@@ -385,6 +437,16 @@ struct TimelineEditor: View {
 
         let hour = totalMinutes / 60
         let minute = (totalMinutes % 60 / 15) * 15 // Snap to 15-minute intervals
+
+        // Trigger haptic feedback when crossing a 15-minute boundary
+        let currentSnapMinute = hour * 60 + minute
+        if let lastMinute = lastHapticMinute, lastMinute != currentSnapMinute {
+            NSHapticFeedbackManager.defaultPerformer.perform(
+                .alignment,
+                performanceTime: .now
+            )
+        }
+        lastHapticMinute = currentSnapMinute
 
         if isStart {
             startHour = hour
