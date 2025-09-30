@@ -14,21 +14,29 @@ struct BedtimeSettingsTab: View {
     init() {
         let defaults = UserDefaults.standard
         _enabled = State(initialValue: defaults.bool(forKey: "bedtimeEnabled"))
-        
+
         // Load start time (default 22:00 / 10 PM)
-        let startTime = defaults.object(forKey: "bedtimeStartTime") as? Date ?? Calendar
-            .current.date(from: DateComponents(hour: 22, minute: 0))!
-        let startComponents = Calendar.current.dateComponents([.hour, .minute], from: startTime)
+        let startTime =
+            defaults.object(forKey: "bedtimeStartTime") as? Date ?? Calendar
+                .current.date(from: DateComponents(hour: 22, minute: 0))!
+        let startComponents = Calendar.current.dateComponents(
+            [.hour, .minute],
+            from: startTime
+        )
         _startHour = State(initialValue: startComponents.hour ?? 22)
         _startMinute = State(initialValue: startComponents.minute ?? 0)
-        
+
         // Load end time (default 6:00 / 6 AM)
-        let endTime = defaults.object(forKey: "bedtimeEndTime") as? Date ?? Calendar
-            .current.date(from: DateComponents(hour: 6, minute: 0))!
-        let endComponents = Calendar.current.dateComponents([.hour, .minute], from: endTime)
+        let endTime =
+            defaults.object(forKey: "bedtimeEndTime") as? Date ?? Calendar
+                .current.date(from: DateComponents(hour: 6, minute: 0))!
+        let endComponents = Calendar.current.dateComponents(
+            [.hour, .minute],
+            from: endTime
+        )
         _endHour = State(initialValue: endComponents.hour ?? 6)
         _endMinute = State(initialValue: endComponents.minute ?? 0)
-        
+
         _title = State(
             initialValue: defaults.string(forKey: "bedtimeTitle")
                 ?? "Bedtime Reminder"
@@ -70,7 +78,8 @@ struct BedtimeSettingsTab: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                
+                Spacer().frame(height: 10.0)
+
                 TimelineEditor(
                     startHour: startHourBinding,
                     startMinute: startMinuteBinding,
@@ -121,7 +130,11 @@ struct BedtimeSettingsTab: View {
                 description: "Show a preview of the bedtime reminder overlay.",
                 icon: "moon"
             ) {
-                UIButton(action: { Notifier.shared.showBedtimeReminder() }, label: "Preview", width: 120)
+                UIButton(
+                    action: { Notifier.shared.showBedtimeReminder() },
+                    label: "Preview",
+                    width: 120
+                )
             }
 
             Spacer()
@@ -143,7 +156,9 @@ struct BedtimeSettingsTab: View {
             get: { self.startHour },
             set: {
                 self.startHour = $0
-                let date = Calendar.current.date(from: DateComponents(hour: $0, minute: startMinute))!
+                let date = Calendar.current.date(
+                    from: DateComponents(hour: $0, minute: startMinute)
+                )!
                 UserDefaults.standard.set(date, forKey: "bedtimeStartTime")
                 Notifier.shared.updateSettings()
             }
@@ -155,7 +170,9 @@ struct BedtimeSettingsTab: View {
             get: { self.startMinute },
             set: {
                 self.startMinute = $0
-                let date = Calendar.current.date(from: DateComponents(hour: startHour, minute: $0))!
+                let date = Calendar.current.date(
+                    from: DateComponents(hour: startHour, minute: $0)
+                )!
                 UserDefaults.standard.set(date, forKey: "bedtimeStartTime")
                 Notifier.shared.updateSettings()
             }
@@ -167,7 +184,9 @@ struct BedtimeSettingsTab: View {
             get: { self.endHour },
             set: {
                 self.endHour = $0
-                let date = Calendar.current.date(from: DateComponents(hour: $0, minute: endMinute))!
+                let date = Calendar.current.date(
+                    from: DateComponents(hour: $0, minute: endMinute)
+                )!
                 UserDefaults.standard.set(date, forKey: "bedtimeEndTime")
                 Notifier.shared.updateSettings()
             }
@@ -179,7 +198,9 @@ struct BedtimeSettingsTab: View {
             get: { self.endMinute },
             set: {
                 self.endMinute = $0
-                let date = Calendar.current.date(from: DateComponents(hour: endHour, minute: $0))!
+                let date = Calendar.current.date(
+                    from: DateComponents(hour: endHour, minute: $0)
+                )!
                 UserDefaults.standard.set(date, forKey: "bedtimeEndTime")
                 Notifier.shared.updateSettings()
             }
