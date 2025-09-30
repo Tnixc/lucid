@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3937B4EB2E8C10F800FB8682 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 3937B4EA2E8C10F800FB8682 /* SQLite */; };
 		3937B4EE2E8C113200FB8682 /* SettingsAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 3937B4ED2E8C113200FB8682 /* SettingsAccess */; };
+		3972F91E2E8C284100AFBB8E /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 3972F91D2E8C284100AFBB8E /* KeyboardShortcuts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 			files = (
 				3937B4EB2E8C10F800FB8682 /* SQLite in Frameworks */,
 				3937B4EE2E8C113200FB8682 /* SettingsAccess in Frameworks */,
+				3972F91E2E8C284100AFBB8E /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,6 +100,7 @@
 			packageReferences = (
 				3937B4E92E8C10F800FB8682 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
 				3937B4EC2E8C113200FB8682 /* XCRemoteSwiftPackageReference "SettingsAccess" */,
+				3972F91C2E8C284100AFBB8E /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 			);
 			productRefGroup = 4180AEAB2839753E0054FEA9 /* Products */;
 			projectDirPath = "";
@@ -352,6 +355,14 @@
 				minimumVersion = 2.1.0;
 			};
 		};
+		3972F91C2E8C284100AFBB8E /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.4.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -364,6 +375,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3937B4EC2E8C113200FB8682 /* XCRemoteSwiftPackageReference "SettingsAccess" */;
 			productName = SettingsAccess;
+		};
+		3972F91D2E8C284100AFBB8E /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3972F91C2E8C284100AFBB8E /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -20,7 +20,7 @@ struct GeneralSettingsTab: View {
             ) {
                 Toggle("", isOn: launchAtLoginBinding)
                     .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
-                    .scaleEffect(0.8, anchor: .trailing)
+                    .scaleEffect(0.9, anchor: .trailing)
             }
 
             Spacer()

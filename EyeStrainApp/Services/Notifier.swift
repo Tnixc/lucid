@@ -1,4 +1,5 @@
 import Foundation
+import KeyboardShortcuts
 import SwiftUI
 import UserNotifications
 
@@ -15,7 +16,13 @@ class Notifier {
     private var clockOutUseOverlay: Bool?
     var overlayWindow: NSWindow?
 
-    func showOverlay(title: String, message: String, dismissAfter: TimeInterval) {
+    private init() {
+        updateSettings()
+        setupKeyboardShortcuts()
+        requestNotificationPermission()
+    }
+
+    func showOverlay(title: String, message: String, dismissAfter: TimeInterval, hotkeyKey: String) {
         overlayWindow = generateOverlay(
             title: title,
             message: message,
@@ -24,7 +31,8 @@ class Notifier {
                 [weak self] in
                 self?.overlayWindow?.close()
                 self?.overlayWindow = nil
-            }
+            },
+            hotkeyKey: hotkeyKey
         )
 
         overlayWindow?.makeKeyAndOrderFront(nil)
@@ -44,7 +52,7 @@ class Notifier {
             defaults.integer(forKey: "eyeStrainDismissAfter")
         )
         if dismissAfter == 0 { dismissAfter = 20 } // default 20 seconds
-        showOverlay(title: title, message: message, dismissAfter: dismissAfter)
+        showOverlay(title: title, message: message, dismissAfter: dismissAfter, hotkeyKey: "eyeStrainDismissHotkey")
     }
 
     func showBedtimeReminder() {
@@ -56,12 +64,20 @@ class Notifier {
             defaults.integer(forKey: "bedtimeDismissAfter")
         )
         if dismissAfter == 0 { dismissAfter = 30 } // default 30 seconds
-        showOverlay(title: title, message: message, dismissAfter: dismissAfter)
+        showOverlay(title: title, message: message, dismissAfter: dismissAfter, hotkeyKey: "bedtimeDismissHotkey")
     }
 
-    private init() {
-        updateSettings()
-        requestNotificationPermission()
+    private func setupKeyboardShortcuts() {
+        KeyboardShortcuts.onKeyDown(for: .dismissEyeStrain) { [weak self] in
+            guard let self = self, let window = self.overlayWindow else { return }
+            window.close()
+            self.overlayWindow = nil
+        }
+        KeyboardShortcuts.onKeyDown(for: .dismissBedtime) { [weak self] in
+            guard let self = self, let window = self.overlayWindow else { return }
+            window.close()
+            self.overlayWindow = nil
+        }
     }
 
     func updateSettings() {
@@ -159,7 +175,8 @@ class Notifier {
             showOverlay(
                 title: "Time to clock out",
                 message: "The time is \(midTime)",
-                dismissAfter: 5.0
+                dismissAfter: 5.0,
+                hotkeyKey: "eyeStrainDismissHotkey"
             )
         } else {
             sendNotification(title: "Clock Out", body: "It's time to clock out!")
@@ -205,4 +222,9 @@ class Notifier {
             }
         }
     }
+}
+
+extension KeyboardShortcuts.Name {
+    static let dismissEyeStrain = Self("dismissEyeStrain")
+    static let dismissBedtime = Self("dismissBedtime")
 }

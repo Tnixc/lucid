@@ -9,6 +9,7 @@ class MenuBarModel: ObservableObject {
     private let defaults = UserDefaults.standard
 
     init() {
+        resetTimer()
         startTimer()
     }
 

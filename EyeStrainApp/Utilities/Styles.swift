@@ -30,7 +30,7 @@ extension Color {
 
 enum Style {
     enum Colors {
-        static let accent: Color = .init(hex: "#6EA3FE")
+        static let accent: Color = .init(hex: "#257FF8")
     }
 
     enum Layout {

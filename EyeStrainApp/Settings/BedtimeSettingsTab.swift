@@ -1,3 +1,5 @@
+import Foundation
+import KeyboardShortcuts
 import SwiftUI
 
 struct BedtimeSettingsTab: View {
@@ -39,7 +41,7 @@ struct BedtimeSettingsTab: View {
             ) {
                 Toggle("", isOn: enabledBinding)
                     .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
-                    .scaleEffect(0.8, anchor: .trailing)
+                    .scaleEffect(0.9, anchor: .trailing)
             }
 
             SettingItem(
@@ -81,6 +83,22 @@ struct BedtimeSettingsTab: View {
                 TextField("", value: dismissAfterBinding, formatter: NumberFormatter())
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .frame(width: 60)
+            }
+
+            SettingItem(
+                title: "Dismiss Hotkey",
+                description: "Shortcut to press to dismiss the overlay.",
+                icon: "keyboard"
+            ) {
+                KeyboardShortcuts.Recorder(for: .dismissBedtime)
+            }
+
+            SettingItem(
+                title: "Preview",
+                description: "Show a preview of the bedtime reminder overlay.",
+                icon: "moon"
+            ) {
+                UIButton(action: { Notifier.shared.showBedtimeReminder() }, label: "Preview")
             }
 
             Spacer()
