@@ -9,7 +9,7 @@ struct UIButton: View {
     let width: CGFloat?
     let height: CGFloat?
     let align: Alignment?
-    
+
     @State private var isHovered = false
 
     init(
@@ -78,7 +78,7 @@ struct UIButtonPlain: View {
     let width: CGFloat?
     let height: CGFloat?
     let align: Alignment?
-    
+
     @State private var isHovered = false
 
     init(

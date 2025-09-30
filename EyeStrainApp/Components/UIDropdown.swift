@@ -42,7 +42,7 @@ struct UIDropdown<T: Hashable>: View {
                 selectionButton
             }
         }
-        .zIndex(isExpanded ? 200 : -10)
+        .zIndex(isExpanded ? 1000 : -10)
         .onAppear {
             setupMouseEventMonitor()
         }
@@ -94,7 +94,7 @@ struct UIDropdown<T: Hashable>: View {
             y: itemHeight / 2 * CGFloat(options.count) + itemHeight * 2 - 6
         )
         .transition(.blurReplace)
-        .zIndex(500)
+        .zIndex(2000)
         .frame(maxHeight: height).fixedSize(horizontal: true, vertical: true)
         .shadow(color: Color.black.opacity(0.1), radius: 20)
     }
@@ -152,9 +152,9 @@ struct DropdownMenuItemView<T: Hashable>: View {
     let optionToString: (T) -> String
     let itemHeight: CGFloat
     let onSelect: () -> Void
-    
+
     @State private var isHovered = false
-    
+
     var body: some View {
         Button(action: onSelect) {
             HStack {

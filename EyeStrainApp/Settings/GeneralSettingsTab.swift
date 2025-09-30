@@ -70,6 +70,25 @@ struct GeneralSettingsTab: View {
                     height: 40
                 )
             }
+            .zIndex(100)
+
+            SettingItem(
+                title: "Preview",
+                description: "Test the overlay with current opacity setting.",
+                icon: "eye"
+            ) {
+                UIButton(
+                    action: {
+                        Notifier.shared.showOverlay(
+                            title: "Overlay Preview",
+                            message: "This is how your overlays will look with the current opacity setting.",
+                            dismissAfter: 5.0
+                        )
+                    },
+                    label: "Preview",
+                    width: 120
+                )
+            }
 
             Spacer()
             InfoBox {
