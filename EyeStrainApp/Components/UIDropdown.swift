@@ -11,6 +11,7 @@ struct UIDropdown<T: Hashable>: View {
 
     @State private var isExpanded = false
     @State private var isButtonEnabled = true
+    @State private var isButtonHovered = false
 
     private let itemHeight = 28.0
 
@@ -59,14 +60,19 @@ struct UIDropdown<T: Hashable>: View {
             }
             .padding()
             .frame(width: width, height: height)
-            .background(Style.Button.bg)
+            .background(isButtonHovered ? Style.Button.bg.opacity(1.5) : Style.Button.bg)
             .clipShape(RoundedRectangle(cornerRadius: Style.Layout.cornerRadius))
         }
         .buttonStyle(.plain)
         .overlay(
             RoundedRectangle(cornerRadius: Style.Layout.cornerRadius)
-                .stroke(Style.Button.border, lineWidth: Style.Layout.borderWidth)
+                .stroke(isButtonHovered ? Style.Button.border.opacity(1.5) : Style.Button.border, lineWidth: Style.Layout.borderWidth)
         )
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isButtonHovered = hovering
+            }
+        }
     }
 
     private var dropdownMenu: some View {
@@ -94,29 +100,19 @@ struct UIDropdown<T: Hashable>: View {
     }
 
     private func dropdownMenuItem(for option: T) -> some View {
-        Button(action: { selectOption(option) }) {
-            HStack {
-                Image(systemName: "checkmark")
-                    .scaleEffect(1, anchor: .center)
-                    .foregroundColor(selectedOption == option ? .primary : .clear)
-                    .fontWeight(.medium)
-                    .frame(width: 15)
-                    .padding(.leading, Style.Layout.padding)
-                Text(optionToString(option))
-                    .foregroundColor(.primary)
-                    .padding(.vertical)
-                    .frame(height: itemHeight)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-
-        .buttonStyle(.borderless)
-        .frame(height: itemHeight)
+        DropdownMenuItemView(
+            option: option,
+            isSelected: selectedOption == option,
+            optionToString: optionToString,
+            itemHeight: itemHeight,
+            onSelect: { selectOption(option) }
+        )
     }
 
     private func toggleExpanded() {
-        onClick?()
+        if let onClick = onClick {
+            onClick()
+        }
         guard isButtonEnabled else { return }
 
         withAnimation(.snappy(duration: 0.15)) {
@@ -131,7 +127,9 @@ struct UIDropdown<T: Hashable>: View {
 
     private func selectOption(_ option: T) {
         selectedOption = option
-        onSelect?(option)
+        if let onSelect = onSelect {
+            onSelect(option)
+        }
         toggleExpanded()
     }
 
@@ -144,6 +142,44 @@ struct UIDropdown<T: Hashable>: View {
                 }
             }
             return event
+        }
+    }
+}
+
+struct DropdownMenuItemView<T: Hashable>: View {
+    let option: T
+    let isSelected: Bool
+    let optionToString: (T) -> String
+    let itemHeight: CGFloat
+    let onSelect: () -> Void
+    
+    @State private var isHovered = false
+    
+    var body: some View {
+        Button(action: onSelect) {
+            HStack {
+                Image(systemName: "checkmark")
+                    .scaleEffect(1, anchor: .center)
+                    .foregroundColor(isSelected ? .primary : .clear)
+                    .fontWeight(.medium)
+                    .frame(width: 15)
+                    .padding(.leading, Style.Layout.padding)
+                Text(optionToString(option))
+                    .foregroundColor(.primary)
+                    .padding(.vertical)
+                    .frame(height: itemHeight)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(isHovered ? Color.secondary.opacity(0.15) : Color.clear)
+            .cornerRadius(Style.Layout.cornerRadius)
+        }
+        .buttonStyle(.borderless)
+        .frame(height: itemHeight)
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isHovered = hovering
+            }
         }
     }
 }

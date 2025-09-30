@@ -40,9 +40,7 @@ struct EyeStrainSettingsTab: View {
                 description: "Time between eye strain reminders.",
                 icon: "timer"
             ) {
-                TextField("", value: intervalBinding, formatter: NumberFormatter())
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .frame(width: 60)
+                UINumberField(value: intervalBinding, width: 60)
             }
 
             SettingItem(
@@ -50,8 +48,7 @@ struct EyeStrainSettingsTab: View {
                 description: "Title displayed on the reminder overlay.",
                 icon: "text.bubble"
             ) {
-                TextField("", text: titleBinding)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                UITextField(text: titleBinding)
             }
 
             SettingItem(
@@ -59,8 +56,7 @@ struct EyeStrainSettingsTab: View {
                 description: "Message displayed on the reminder overlay.",
                 icon: "text.quote"
             ) {
-                TextField("", text: messageBinding)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                UITextField(text: messageBinding)
             }
 
             SettingItem(
@@ -68,9 +64,7 @@ struct EyeStrainSettingsTab: View {
                 description: "Time before the overlay auto-dismisses.",
                 icon: "clock"
             ) {
-                TextField("", value: dismissAfterBinding, formatter: NumberFormatter())
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .frame(width: 60)
+                UINumberField(value: dismissAfterBinding, width: 60)
             }
 
             SettingItem(

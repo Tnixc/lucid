@@ -9,6 +9,8 @@ struct UIButton: View {
     let width: CGFloat?
     let height: CGFloat?
     let align: Alignment?
+    
+    @State private var isHovered = false
 
     init(
         action: @escaping () -> Void,
@@ -45,7 +47,7 @@ struct UIButton: View {
             }
             .padding(Style.Layout.padding)
             .frame(width: width, height: height ?? Style.Button.height)
-            .background(Style.Button.bg)
+            .background(isHovered ? Style.Button.bg.opacity(1.5) : Style.Button.bg)
             .clipShape(
                 RoundedRectangle(cornerRadius: Style.Layout.cornerRadius)
             )
@@ -55,12 +57,17 @@ struct UIButton: View {
             .overlay(
                 RoundedRectangle(cornerRadius: Style.Layout.cornerRadius)
                     .stroke(
-                        Style.Button.border,
+                        isHovered ? Style.Button.border.opacity(1.5) : Style.Button.border,
                         lineWidth: Style.Layout.borderWidth
                     )
             )
         }
         .buttonStyle(.plain)
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
+            }
+        }
     }
 }
 
@@ -71,6 +78,8 @@ struct UIButtonPlain: View {
     let width: CGFloat?
     let height: CGFloat?
     let align: Alignment?
+    
+    @State private var isHovered = false
 
     init(
         action: @escaping () -> Void,
@@ -107,7 +116,7 @@ struct UIButtonPlain: View {
             }
             .padding(Style.Layout.padding)
             .frame(width: width, height: height ?? Style.Button.height)
-            .background(.clear)
+            .background(isHovered ? Style.Button.bg.opacity(0.5) : .clear)
             .contentShape(
                 RoundedRectangle(cornerRadius: Style.Layout.cornerRadius)
             )
@@ -120,5 +129,10 @@ struct UIButtonPlain: View {
             )
         }
         .buttonStyle(.plain)
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
+            }
+        }
     }
 }
