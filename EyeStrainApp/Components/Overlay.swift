@@ -1,3 +1,4 @@
+import Cocoa
 import SwiftUI
 
 func generateOverlay(
@@ -43,6 +44,7 @@ struct OverlayView: View {
     let message: String
     let onDismiss: () -> Void
     @State private var remainingTime: TimeInterval
+    @State private var currentTime: String = ""
 
     private let defaults = UserDefaults.standard
 
@@ -82,6 +84,12 @@ struct OverlayView: View {
         return String(format: "%02d:%02d", minutes, seconds)
     }
 
+    func updateCurrentTime() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mm a"
+        currentTime = formatter.string(from: Date())
+    }
+
     var body: some View {
         var view = AnyView(
             ZStack {
@@ -90,29 +98,60 @@ struct OverlayView: View {
                     blendingMode: .behindWindow
                 )
 
-                VStack(spacing: 20) {
-                    Text(title)
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
+                VStack(spacing: 0) {
+                    // Top section with current time
+                    Spacer()
+                    Text(currentTime)
+                        .font(.title)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
 
-                    Text(message)
-                        .font(.title2)
+                    Spacer()
 
-                    HStack(spacing: 0) {
-                        Text("Dismisses in ")
+                    // Middle section with title and message
+                    VStack(spacing: 20) {
+                        Text(title)
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+
+                        Text(message)
                             .font(.title2)
-                            .foregroundStyle(.secondary)
-                        Text(formatTime(remainingTime))
-                            .font(.title2)
-                            .foregroundStyle(.secondary)
-                            .contentTransition(.numericText(countsDown: true))
-                            .animation(.snappy, value: remainingTime)
-                            .monospacedDigit()
+
+                        HStack(spacing: 0) {
+                            Text("Dismisses in ")
+                                .font(.title2)
+                                .foregroundStyle(.secondary)
+                            Text(formatTime(remainingTime))
+                                .font(.title2)
+                                .foregroundStyle(.secondary)
+                                .contentTransition(
+                                    .numericText(countsDown: true)
+                                )
+                                .animation(.snappy, value: remainingTime)
+                                .monospacedDigit()
+                        }
                     }
+
+                    Spacer()
+
+                    // Bottom section with buttons
+                    HStack(spacing: 20) {
+                        UIButton(
+                            action: {
+                                onDismiss()
+                            },
+                            label: "Skip",
+                            icon: "chevron.forward.dotted.chevron.forward",
+                            width: 120,
+                        )
+                    }
+                    .padding(.bottom, 40)
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
             }
             .onAppear {
+                updateCurrentTime()
                 startTimer(interval: 1)
             }
         )
@@ -133,6 +172,7 @@ struct OverlayView: View {
             timer in
             if remainingTime > 0 {
                 remainingTime -= interval
+                updateCurrentTime()
             } else {
                 timer.invalidate()
                 onDismiss()
