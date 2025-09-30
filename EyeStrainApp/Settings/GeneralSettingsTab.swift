@@ -27,12 +27,16 @@ enum OverlayMaterial: String, CaseIterable, Hashable {
 struct GeneralSettingsTab: View {
     @State private var launchAtLogin: Bool
     @State private var overlayMaterial: OverlayMaterial
+    @State private var clickToDismiss: Bool
 
     init() {
         let defaults = UserDefaults.standard
         _launchAtLogin = State(initialValue: defaults.bool(forKey: "launchAtLogin"))
         let materialString = defaults.string(forKey: "overlayMaterial") ?? "Medium"
         _overlayMaterial = State(initialValue: OverlayMaterial.fromString(materialString))
+        _clickToDismiss = State(
+            initialValue: defaults.object(forKey: "eyeStrainClickToDismiss") as? Bool ?? true
+        )
     }
 
     var body: some View {
@@ -71,6 +75,16 @@ struct GeneralSettingsTab: View {
                 )
             }
             .zIndex(100)
+
+            SettingItem(
+                title: "Click to Dismiss",
+                description: "Allow clicking on the overlay to dismiss it.",
+                icon: "hand.tap"
+            ) {
+                Toggle("", isOn: clickToDismissBinding)
+                    .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
+                    .scaleEffect(0.9, anchor: .trailing)
+            }
 
             SettingItem(
                 title: "Preview",
@@ -119,6 +133,16 @@ struct GeneralSettingsTab: View {
             set: {
                 self.overlayMaterial = $0
                 UserDefaults.standard.set($0.rawValue, forKey: "overlayMaterial")
+            }
+        )
+    }
+
+    private var clickToDismissBinding: Binding<Bool> {
+        Binding(
+            get: { self.clickToDismiss },
+            set: {
+                self.clickToDismiss = $0
+                UserDefaults.standard.set($0, forKey: "eyeStrainClickToDismiss")
             }
         )
     }

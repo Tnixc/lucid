@@ -9,7 +9,8 @@ class Notifier {
     private var lastClockOutCheck: Date?
     private var clockOutTime: Date?
     private var lastReminderTime: Date?
-    private var bedtimeTime: Date?
+    private var bedtimeStartTime: Date?
+    private var bedtimeEndTime: Date?
     private var lastBedtimeCheck: Date?
     private let defaults = UserDefaults.standard
     private var activeDays: Set<Int> = []
@@ -80,7 +81,8 @@ class Notifier {
             defaults.array(forKey: "clockOutSelectedDays") as? [Int] ?? []
         )
         clockOutUseOverlay = defaults.object(forKey: "clockOutUseOverlay") as? Bool
-        bedtimeTime = defaults.object(forKey: "bedtimeTime") as? Date
+        bedtimeStartTime = defaults.object(forKey: "bedtimeStartTime") as? Date
+        bedtimeEndTime = defaults.object(forKey: "bedtimeEndTime") as? Date
     }
 
     func checkClockOutTime() {
@@ -130,8 +132,14 @@ class Notifier {
     }
 
     func checkBedtimeTime() {
+        // Skip if settings window is open
+        guard !AppState.shared.isSettingsWindowOpen else {
+            return
+        }
+        
         guard defaults.bool(forKey: "bedtimeEnabled"),
-              let bedtimeTime = bedtimeTime
+              let bedtimeStartTime = bedtimeStartTime,
+              let bedtimeEndTime = bedtimeEndTime
         else {
             return
         }
@@ -139,22 +147,71 @@ class Notifier {
         let now = Date()
         let calendar = Calendar.current
 
-        let bedtimeComponents = calendar.dateComponents(
-            [.hour, .minute],
-            from: bedtimeTime
-        )
-        let currentComponents = calendar.dateComponents(
-            [.hour, .minute],
-            from: now
-        )
-
-        if bedtimeComponents == currentComponents {
-            if lastBedtimeCheck == nil
-                || !calendar.isDate(lastBedtimeCheck!, inSameDayAs: now)
-            {
+        let startComponents = calendar.dateComponents([.hour, .minute], from: bedtimeStartTime)
+        let endComponents = calendar.dateComponents([.hour, .minute], from: bedtimeEndTime)
+        let currentComponents = calendar.dateComponents([.hour, .minute], from: now)
+        
+        guard let startHour = startComponents.hour,
+              let startMinute = startComponents.minute,
+              let endHour = endComponents.hour,
+              let endMinute = endComponents.minute,
+              let currentHour = currentComponents.hour,
+              let currentMinute = currentComponents.minute else {
+            return
+        }
+        
+        // Convert to minutes since midnight for easier comparison
+        let startMinutes = startHour * 60 + startMinute
+        let endMinutes = endHour * 60 + endMinute
+        let currentMinutes = currentHour * 60 + currentMinute
+        
+        // Check if current time is within bedtime range
+        let currentlyInBedtime: Bool
+        if endMinutes < startMinutes {
+            // Range spans midnight (e.g., 22:00 to 6:00)
+            currentlyInBedtime = currentMinutes >= startMinutes || currentMinutes <= endMinutes
+        } else {
+            // Range within same day (e.g., 10:00 to 18:00)
+            currentlyInBedtime = currentMinutes >= startMinutes && currentMinutes <= endMinutes
+        }
+        
+        if currentlyInBedtime {
+            // Show reminder once per entry into bedtime range
+            if lastBedtimeCheck == nil || !isInBedtimeRange(lastBedtimeCheck!) {
                 showBedtimeReminder()
                 lastBedtimeCheck = now
             }
+        }
+    }
+    
+    private func isInBedtimeRange(_ date: Date) -> Bool {
+        guard let bedtimeStartTime = bedtimeStartTime,
+              let bedtimeEndTime = bedtimeEndTime else {
+            return false
+        }
+        
+        let calendar = Calendar.current
+        let startComponents = calendar.dateComponents([.hour, .minute], from: bedtimeStartTime)
+        let endComponents = calendar.dateComponents([.hour, .minute], from: bedtimeEndTime)
+        let checkComponents = calendar.dateComponents([.hour, .minute], from: date)
+        
+        guard let startHour = startComponents.hour,
+              let startMinute = startComponents.minute,
+              let endHour = endComponents.hour,
+              let endMinute = endComponents.minute,
+              let checkHour = checkComponents.hour,
+              let checkMinute = checkComponents.minute else {
+            return false
+        }
+        
+        let startMinutes = startHour * 60 + startMinute
+        let endMinutes = endHour * 60 + endMinute
+        let checkMinutes = checkHour * 60 + checkMinute
+        
+        if endMinutes < startMinutes {
+            return checkMinutes >= startMinutes || checkMinutes <= endMinutes
+        } else {
+            return checkMinutes >= startMinutes && checkMinutes <= endMinutes
         }
     }
 

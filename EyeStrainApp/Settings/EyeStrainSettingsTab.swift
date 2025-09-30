@@ -6,7 +6,6 @@ struct EyeStrainSettingsTab: View {
     @State private var title: String
     @State private var message: String
     @State private var dismissAfter: Int
-    @State private var clickToDismiss: Bool
 
     init() {
         let defaults = UserDefaults.standard
@@ -26,9 +25,6 @@ struct EyeStrainSettingsTab: View {
             initialValue: defaults.integer(forKey: "eyeStrainDismissAfter")
         )
         if _dismissAfter.wrappedValue == 0 { _dismissAfter.wrappedValue = 20 }
-        _clickToDismiss = State(
-            initialValue: defaults.object(forKey: "eyeStrainClickToDismiss") as? Bool ?? true
-        )
     }
 
     var body: some View {
@@ -65,16 +61,6 @@ struct EyeStrainSettingsTab: View {
                 icon: "clock"
             ) {
                 UINumberField(value: dismissAfterBinding, width: 60)
-            }
-
-            SettingItem(
-                title: "Click to Dismiss",
-                description: "Allow clicking on the overlay to dismiss it.",
-                icon: "hand.tap"
-            ) {
-                Toggle("", isOn: clickToDismissBinding)
-                    .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
-                    .scaleEffect(0.9, anchor: .trailing)
             }
 
             SettingItem(
@@ -125,16 +111,6 @@ struct EyeStrainSettingsTab: View {
             set: {
                 self.dismissAfter = $0
                 UserDefaults.standard.set($0, forKey: "eyeStrainDismissAfter")
-            }
-        )
-    }
-
-    private var clickToDismissBinding: Binding<Bool> {
-        Binding(
-            get: { self.clickToDismiss },
-            set: {
-                self.clickToDismiss = $0
-                UserDefaults.standard.set($0, forKey: "eyeStrainClickToDismiss")
             }
         )
     }

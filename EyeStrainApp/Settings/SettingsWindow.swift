@@ -21,6 +21,12 @@ struct SettingsWindow: View {
             tabContent.padding(.bottom, Style.Layout.padding)
             Spacer()
         }
+        .onAppear {
+            AppState.shared.isSettingsWindowOpen = true
+        }
+        .onDisappear {
+            AppState.shared.isSettingsWindowOpen = false
+        }
     }
 
     var sidebar: some View {

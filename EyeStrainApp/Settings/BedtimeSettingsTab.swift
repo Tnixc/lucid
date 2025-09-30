@@ -3,7 +3,10 @@ import SwiftUI
 
 struct BedtimeSettingsTab: View {
     @State private var enabled: Bool
-    @State private var bedtimeTime: Date
+    @State private var startHour: Int
+    @State private var startMinute: Int
+    @State private var endHour: Int
+    @State private var endMinute: Int
     @State private var title: String
     @State private var message: String
     @State private var dismissAfter: Int
@@ -11,10 +14,21 @@ struct BedtimeSettingsTab: View {
     init() {
         let defaults = UserDefaults.standard
         _enabled = State(initialValue: defaults.bool(forKey: "bedtimeEnabled"))
-        _bedtimeTime = State(
-            initialValue: defaults.object(forKey: "bedtimeTime") as? Date ?? Calendar
-                .current.date(from: DateComponents(hour: 22, minute: 0))!
-        )
+        
+        // Load start time (default 22:00 / 10 PM)
+        let startTime = defaults.object(forKey: "bedtimeStartTime") as? Date ?? Calendar
+            .current.date(from: DateComponents(hour: 22, minute: 0))!
+        let startComponents = Calendar.current.dateComponents([.hour, .minute], from: startTime)
+        _startHour = State(initialValue: startComponents.hour ?? 22)
+        _startMinute = State(initialValue: startComponents.minute ?? 0)
+        
+        // Load end time (default 6:00 / 6 AM)
+        let endTime = defaults.object(forKey: "bedtimeEndTime") as? Date ?? Calendar
+            .current.date(from: DateComponents(hour: 6, minute: 0))!
+        let endComponents = Calendar.current.dateComponents([.hour, .minute], from: endTime)
+        _endHour = State(initialValue: endComponents.hour ?? 6)
+        _endMinute = State(initialValue: endComponents.minute ?? 0)
+        
         _title = State(
             initialValue: defaults.string(forKey: "bedtimeTitle")
                 ?? "Bedtime Reminder"
@@ -35,7 +49,7 @@ struct BedtimeSettingsTab: View {
 
             SettingItem(
                 title: "Enable Bedtime Reminders",
-                description: "Show reminders at bedtime.",
+                description: "Show reminders during bedtime hours.",
                 icon: "moon"
             ) {
                 Toggle("", isOn: enabledBinding)
@@ -43,18 +57,40 @@ struct BedtimeSettingsTab: View {
                     .scaleEffect(0.9, anchor: .trailing)
             }
 
-            SettingItem(
-                title: "Bedtime",
-                description: "Time to show bedtime reminder.",
-                icon: "clock"
-            ) {
-                DatePicker(
-                    "",
-                    selection: bedtimeTimeBinding,
-                    displayedComponents: .hourAndMinute
+            VStack(alignment: .leading, spacing: Style.Layout.padding) {
+                HStack {
+                    Image(systemName: "clock")
+                        .renderingMode(.template)
+                        .font(.title3)
+                        .frame(width: Style.Icon.size, height: Style.Icon.size)
+                    VStack(alignment: .leading) {
+                        Text("Bedtime Hours")
+                        Text("Set when you want bedtime reminders to be active.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                TimelineEditor(
+                    startHour: startHourBinding,
+                    startMinute: startMinuteBinding,
+                    endHour: endHourBinding,
+                    endMinute: endMinuteBinding
                 )
-                .datePickerStyle(.compact)
+                .padding(.vertical, 8)
             }
+            .padding(Style.Layout.padding)
+            .background(
+                ZStack {
+                    RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
+                        .fill(Style.Settings.itembg)
+                    RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
+                        .stroke(
+                            Style.Settings.itemBorder,
+                            lineWidth: Style.Layout.borderWidth
+                        )
+                }
+            )
 
             SettingItem(
                 title: "Reminder Title",
@@ -102,12 +138,50 @@ struct BedtimeSettingsTab: View {
         )
     }
 
-    private var bedtimeTimeBinding: Binding<Date> {
+    private var startHourBinding: Binding<Int> {
         Binding(
-            get: { self.bedtimeTime },
+            get: { self.startHour },
             set: {
-                self.bedtimeTime = $0
-                UserDefaults.standard.set($0, forKey: "bedtimeTime")
+                self.startHour = $0
+                let date = Calendar.current.date(from: DateComponents(hour: $0, minute: startMinute))!
+                UserDefaults.standard.set(date, forKey: "bedtimeStartTime")
+                Notifier.shared.updateSettings()
+            }
+        )
+    }
+
+    private var startMinuteBinding: Binding<Int> {
+        Binding(
+            get: { self.startMinute },
+            set: {
+                self.startMinute = $0
+                let date = Calendar.current.date(from: DateComponents(hour: startHour, minute: $0))!
+                UserDefaults.standard.set(date, forKey: "bedtimeStartTime")
+                Notifier.shared.updateSettings()
+            }
+        )
+    }
+
+    private var endHourBinding: Binding<Int> {
+        Binding(
+            get: { self.endHour },
+            set: {
+                self.endHour = $0
+                let date = Calendar.current.date(from: DateComponents(hour: $0, minute: endMinute))!
+                UserDefaults.standard.set(date, forKey: "bedtimeEndTime")
+                Notifier.shared.updateSettings()
+            }
+        )
+    }
+
+    private var endMinuteBinding: Binding<Int> {
+        Binding(
+            get: { self.endMinute },
+            set: {
+                self.endMinute = $0
+                let date = Calendar.current.date(from: DateComponents(hour: endHour, minute: $0))!
+                UserDefaults.standard.set(date, forKey: "bedtimeEndTime")
+                Notifier.shared.updateSettings()
             }
         )
     }
