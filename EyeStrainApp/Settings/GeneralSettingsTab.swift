@@ -20,7 +20,8 @@ enum OverlayMaterial: String, CaseIterable, Hashable {
     }
 
     static func fromString(_ string: String) -> OverlayMaterial {
-        return OverlayMaterial.allCases.first { $0.rawValue == string } ?? .medium
+        return OverlayMaterial.allCases.first { $0.rawValue == string }
+            ?? .medium
     }
 }
 
@@ -31,11 +32,17 @@ struct GeneralSettingsTab: View {
 
     init() {
         let defaults = UserDefaults.standard
-        _launchAtLogin = State(initialValue: defaults.bool(forKey: "launchAtLogin"))
-        let materialString = defaults.string(forKey: "overlayMaterial") ?? "Medium"
-        _overlayMaterial = State(initialValue: OverlayMaterial.fromString(materialString))
+        _launchAtLogin = State(
+            initialValue: defaults.bool(forKey: "launchAtLogin")
+        )
+        let materialString =
+            defaults.string(forKey: "overlayMaterial") ?? "Medium"
+        _overlayMaterial = State(
+            initialValue: OverlayMaterial.fromString(materialString)
+        )
         _clickToDismiss = State(
-            initialValue: defaults.object(forKey: "eyeStrainClickToDismiss") as? Bool ?? true
+            initialValue: defaults.object(forKey: "eyeStrainClickToDismiss")
+                as? Bool ?? true
         )
     }
 
@@ -45,7 +52,8 @@ struct GeneralSettingsTab: View {
 
             SettingItem(
                 title: "Launch at Login",
-                description: "Automatically start Eye Strain App when you log in.",
+                description:
+                "Automatically start Eye Strain App when you log in.",
                 icon: "power"
             ) {
                 Toggle("", isOn: launchAtLoginBinding)
@@ -78,7 +86,8 @@ struct GeneralSettingsTab: View {
 
             SettingItem(
                 title: "Click to Dismiss",
-                description: "Allow clicking on the overlay to dismiss it.",
+                description:
+                "Allow clicking on the overlay to dismiss it. Not recommened.",
                 icon: "hand.tap"
             ) {
                 Toggle("", isOn: clickToDismissBinding)
@@ -95,7 +104,8 @@ struct GeneralSettingsTab: View {
                     action: {
                         Notifier.shared.showOverlay(
                             title: "Overlay Preview",
-                            message: "This is how your overlays will look with the current opacity setting.",
+                            message:
+                            "This is how your overlays will look with the current opacity setting.",
                             dismissAfter: 5.0
                         )
                     },
@@ -104,6 +114,13 @@ struct GeneralSettingsTab: View {
                 )
             }
 
+            InfoBox {
+                HStack {
+                    Image(systemName: "info.circle.fill")
+                    Text("The skip button is randomly placed to prevent developing muscle memory.")
+                    Spacer()
+                }
+            }
             Spacer()
             InfoBox {
                 HStack {
@@ -132,7 +149,10 @@ struct GeneralSettingsTab: View {
             get: { self.overlayMaterial },
             set: {
                 self.overlayMaterial = $0
-                UserDefaults.standard.set($0.rawValue, forKey: "overlayMaterial")
+                UserDefaults.standard.set(
+                    $0.rawValue,
+                    forKey: "overlayMaterial"
+                )
             }
         )
     }

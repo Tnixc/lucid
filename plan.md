@@ -43,7 +43,7 @@ Build a macOS SwiftUI app that reminds users to take breaks for eye strain every
 5. Build Settings window with bindings to UserDefaults.
 6. Add bedtime reminder logic.
 7. Test full-screen overlay behavior (immovable, always on top).
-8. Polish UI and add icons/assets.
+8. Polish UI and add icons/assets     .
 
 ## Potential Challenges
 - Ensuring overlay is truly immovable and covers the whole screen.
