@@ -25,6 +25,8 @@ struct MainScene: Scene {
 struct VisualEffect: NSViewRepresentable {
     func makeNSView(context _: Self.Context) -> NSView {
         let visualEffectView = NSVisualEffectView()
+        visualEffectView.material = .menu
+        visualEffectView.blendingMode = .behindWindow
         visualEffectView.state = NSVisualEffectView.State.active
         visualEffectView.isEmphasized = true
         return visualEffectView

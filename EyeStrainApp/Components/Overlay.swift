@@ -51,7 +51,8 @@ struct OverlayView: View {
     }
 
     private var overlayMaterial: NSVisualEffectView.Material {
-        let materialString = defaults.string(forKey: "overlayMaterial") ?? "Medium"
+        let materialString =
+            defaults.string(forKey: "overlayMaterial") ?? "Medium"
         switch materialString {
         case "Ultra Thin": return .hudWindow
         case "Thin": return .sidebar
@@ -84,7 +85,10 @@ struct OverlayView: View {
     var body: some View {
         var view = AnyView(
             ZStack {
-                VisualEffectView(material: overlayMaterial, blendingMode: .behindWindow)
+                VisualEffectView(
+                    material: overlayMaterial,
+                    blendingMode: .behindWindow
+                )
 
                 VStack(spacing: 20) {
                     Text(title)
@@ -102,7 +106,8 @@ struct OverlayView: View {
                             .font(.title2)
                             .foregroundStyle(.secondary)
                             .contentTransition(.numericText(countsDown: true))
-                            .animation(.bouncy, value: remainingTime).monospacedDigit()
+                            .animation(.snappy, value: remainingTime)
+                            .monospacedDigit()
                     }
                 }
                 .padding()
@@ -124,7 +129,8 @@ struct OverlayView: View {
     }
 
     private func startTimer(interval: Double) {
-        Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { timer in
+        Timer.scheduledTimer(withTimeInterval: interval, repeats: true) {
+            timer in
             if remainingTime > 0 {
                 remainingTime -= interval
             } else {
@@ -148,7 +154,10 @@ struct VisualEffectView: NSViewRepresentable {
         return visualEffectView
     }
 
-    func updateNSView(_ visualEffectView: NSVisualEffectView, context _: Context) {
+    func updateNSView(
+        _ visualEffectView: NSVisualEffectView,
+        context _: Context
+    ) {
         visualEffectView.material = material
         visualEffectView.blendingMode = blendingMode
     }
