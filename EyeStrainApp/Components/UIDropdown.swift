@@ -77,7 +77,6 @@ struct UIDropdown<T: Hashable>: View {
         }
         .padding(4)
         .background(.thickMaterial)
-        .background(Style.Button.bg)
         .overlay(
             RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
                 .stroke(Color.secondary.opacity(0.2), lineWidth: 2)
@@ -89,7 +88,7 @@ struct UIDropdown<T: Hashable>: View {
             y: itemHeight / 2 * CGFloat(options.count) + itemHeight * 2 - 6
         )
         .transition(.blurReplace)
-        .zIndex(50)
+        .zIndex(500)
         .frame(maxHeight: height).fixedSize(horizontal: true, vertical: true)
         .shadow(color: Color.black.opacity(0.1), radius: 20)
     }

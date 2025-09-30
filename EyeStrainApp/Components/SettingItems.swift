@@ -23,8 +23,10 @@ struct SettingItem<Content: View>: View {
             content()
         }
         .padding(Style.Layout.padding)
-        .background(Style.Settings.itembg)
-        .cornerRadius(Style.Layout.cornerRadius + 2)
+        .background(
+            RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
+                .fill(Style.Settings.itembg)
+        )
         .overlay(
             RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
                 .stroke(
@@ -66,8 +68,10 @@ struct SettingItemGroup<Content: View>: View {
     var body: some View {
         content()
             .padding(Style.Layout.padding)
-            .background(Style.Settings.itembg)
-            .cornerRadius(Style.Layout.cornerRadius + 2)
+            .background(
+                RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
+                    .fill(Style.Settings.itembg)
+            )
             .overlay(
                 RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
                     .stroke(

@@ -46,17 +46,19 @@ struct OverlayView: View {
 
     private let defaults = UserDefaults.standard
 
-    private var clickToDismiss: Bool { defaults.object(forKey: "eyeStrainClickToDismiss") as? Bool ?? true }
+    private var clickToDismiss: Bool {
+        defaults.object(forKey: "eyeStrainClickToDismiss") as? Bool ?? true
+    }
 
     private var overlayMaterial: NSVisualEffectView.Material {
         let materialString = defaults.string(forKey: "overlayMaterial") ?? "Medium"
         switch materialString {
         case "Ultra Thin": return .hudWindow
-        case "Thin": return .toolTip
-        case "Medium": return .fullScreenUI
-        case "Thick": return .sheet
-        case "Ultra Thick": return .windowBackground
-        default: return .fullScreenUI
+        case "Thin": return .sidebar
+        case "Medium": return .headerView
+        case "Thick": return .underWindowBackground
+        case "Ultra Thick": return .sheet
+        default: return .sidebar
         }
     }
 
@@ -111,9 +113,11 @@ struct OverlayView: View {
         )
 
         if clickToDismiss {
-            view = AnyView(view.onTapGesture {
-                onDismiss()
-            })
+            view = AnyView(
+                view.onTapGesture {
+                    onDismiss()
+                }
+            )
         }
 
         return view
