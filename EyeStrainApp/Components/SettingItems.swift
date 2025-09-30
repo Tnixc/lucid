@@ -24,15 +24,15 @@ struct SettingItem<Content: View>: View {
         }
         .padding(Style.Layout.padding)
         .background(
-            RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
-                .fill(Style.Settings.itembg)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
-                .stroke(
-                    Style.Settings.itemBorder,
-                    lineWidth: Style.Layout.borderWidth
-                )
+            ZStack {
+                RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
+                    .fill(Style.Settings.itembg)
+                RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
+                    .stroke(
+                        Style.Settings.itemBorder,
+                        lineWidth: Style.Layout.borderWidth
+                    )
+            }
         )
     }
 }
@@ -69,15 +69,15 @@ struct SettingItemGroup<Content: View>: View {
         content()
             .padding(Style.Layout.padding)
             .background(
-                RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
-                    .fill(Style.Settings.itembg)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
-                    .stroke(
-                        Style.Settings.itemBorder,
-                        lineWidth: Style.Layout.borderWidth
-                    )
+                ZStack {
+                    RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
+                        .fill(Style.Settings.itembg)
+                    RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
+                        .stroke(
+                            Style.Settings.itemBorder,
+                            lineWidth: Style.Layout.borderWidth
+                        )
+                }
             )
     }
 }
