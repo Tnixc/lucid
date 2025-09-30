@@ -1,3 +1,4 @@
+import KeyboardShortcuts
 import ServiceManagement
 import SwiftUI
 
@@ -21,6 +22,14 @@ struct GeneralSettingsTab: View {
                 Toggle("", isOn: launchAtLoginBinding)
                     .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
                     .scaleEffect(0.9, anchor: .trailing)
+            }
+
+            SettingItem(
+                title: "Dismiss Overlay Hotkey",
+                description: "Keyboard shortcut to dismiss any overlay.",
+                icon: "keyboard"
+            ) {
+                KeyboardShortcuts.Recorder(for: .dismissOverlay)
             }
 
             Spacer()

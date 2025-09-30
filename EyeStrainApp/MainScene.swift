@@ -10,7 +10,7 @@ struct MainScene: Scene {
                     minWidth: 500,
                     minHeight: 500
                 )
-                .toolbar { Text("Eye Strain Settings").fontWeight(.semibold) }
+                .toolbar { Text("Eye Strain Settings").fontWeight(.bold) .font(.title3) }
         }
         .windowResizability(WindowResizability.contentSize)
         .defaultSize(

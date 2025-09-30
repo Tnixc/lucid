@@ -1,50 +1,10 @@
 import SwiftUI
 
-func keyCodeFromString(_ string: String) -> UInt16? {
-    switch string.lowercased() {
-    case "escape": return 53
-    case "space": return 49
-    case "return": return 36
-    case "enter": return 36
-    case "tab": return 48
-    case "delete": return 51
-    case "backspace": return 51
-    case "a": return 0
-    case "b": return 11
-    case "c": return 8
-    case "d": return 2
-    case "e": return 14
-    case "f": return 3
-    case "g": return 5
-    case "h": return 4
-    case "i": return 34
-    case "j": return 38
-    case "k": return 40
-    case "l": return 37
-    case "m": return 46
-    case "n": return 45
-    case "o": return 31
-    case "p": return 35
-    case "q": return 12
-    case "r": return 15
-    case "s": return 1
-    case "t": return 17
-    case "u": return 32
-    case "v": return 9
-    case "w": return 13
-    case "x": return 7
-    case "y": return 16
-    case "z": return 6
-    default: return nil
-    }
-}
-
 func generateOverlay(
     title: String,
     message: String,
     seconds: Double,
-    onDismiss: @escaping () -> Void,
-    hotkeyKey _: String
+    onDismiss: @escaping () -> Void
 ) -> NSWindow {
     let screen = NSScreen.main!
     let window = NSWindow(

@@ -1,5 +1,4 @@
 import Foundation
-import KeyboardShortcuts
 import SwiftUI
 
 struct EyeStrainSettingsTab: View {
@@ -74,7 +73,6 @@ struct EyeStrainSettingsTab: View {
                     .frame(width: 60)
             }
 
-            Spacer()
             SettingItem(
                 title: "Click to Dismiss",
                 description: "Allow clicking on the overlay to dismiss it.",
@@ -86,19 +84,11 @@ struct EyeStrainSettingsTab: View {
             }
 
             SettingItem(
-                title: "Dismiss Hotkey",
-                description: "Shortcut to press to dismiss the overlay.",
-                icon: "keyboard"
-            ) {
-                KeyboardShortcuts.Recorder(for: .dismissEyeStrain)
-            }
-
-            SettingItem(
                 title: "Preview",
                 description: "Show a preview of the eye strain reminder overlay.",
                 icon: "eye"
             ) {
-                UIButton(action: { Notifier.shared.showEyeStrainReminder() }, label: "Preview")
+              UIButton(action: { Notifier.shared.showEyeStrainReminder() }, label: "Preview", width: 120)
             }
 
             Spacer()

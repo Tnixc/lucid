@@ -3,12 +3,6 @@
 ## Overview
 Build a macOS SwiftUI app that reminds users to take breaks for eye strain every 20 minutes and provides bedtime reminders. The app will be menu bar-based, with a countdown timer in the menu bar, a settings window for customization, and full-screen overlays for reminders.
 
-## Inspiration from Toki
-- Use the Toki app structure as a base, which is a menu bar app with overlays for notifications.
-- Adapt the `Notifier` service and `Overlay` component for showing full-screen reminders.
-- Menu bar with status item displaying countdown.
-- Settings window for configuration.
-
 ## Key Features
 1. **Menu Bar Integration**
    - Status item showing countdown to next eye strain break (e.g., "15m left").
