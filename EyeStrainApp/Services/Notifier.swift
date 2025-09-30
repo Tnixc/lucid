@@ -13,6 +13,7 @@ class Notifier {
     private var bedtimeEndTime: Date?
     private var lastBedtimeCheck: Date?
     private var lastBedtimeReminderTime: Date?
+    private var lastMiniOverlayTime: Date?
     private let defaults = UserDefaults.standard
     private var activeDays: Set<Int> = []
     private var clockOutUseOverlay: Bool?
@@ -58,7 +59,7 @@ class Notifier {
         }
     }
 
-    func showMiniOverlay(text: String, duration: TimeInterval = 3.15) {
+    func showMiniOverlay(text: String, icon: String? = nil, duration: TimeInterval = 3.15, holdDuration: TimeInterval = 1.5) {
         // Close any existing mini overlay windows
         miniOverlayWindows.forEach { $0.close() }
         miniOverlayWindows.removeAll()
@@ -68,8 +69,10 @@ class Notifier {
         for screen in screens {
             let window = generateMiniOverlay(
                 text: text,
+                icon: icon,
                 screen: screen,
                 duration: duration,
+                holdDuration: holdDuration,
                 onDismiss: {
                     [weak self] in
                     self?.miniOverlayWindows.forEach { $0.close() }
@@ -123,6 +126,38 @@ class Notifier {
         clockOutUseOverlay = defaults.object(forKey: "clockOutUseOverlay") as? Bool
         bedtimeStartTime = defaults.object(forKey: "bedtimeStartTime") as? Date
         bedtimeEndTime = defaults.object(forKey: "bedtimeEndTime") as? Date
+    }
+
+    func checkMiniOverlayTime() {
+        guard defaults.bool(forKey: "miniOverlayEnabled") else {
+            return
+        }
+
+        let now = Date()
+        let intervalMinutes = defaults.integer(forKey: "miniOverlayInterval")
+        let interval = intervalMinutes > 0 ? intervalMinutes : 30 // default 30 minutes
+        let intervalSeconds = TimeInterval(interval * 60)
+
+        if lastMiniOverlayTime == nil {
+            // First time, show immediately
+            showScheduledMiniOverlay()
+            lastMiniOverlayTime = now
+        } else if let lastTime = lastMiniOverlayTime,
+                  now.timeIntervalSince(lastTime) >= intervalSeconds
+        {
+            // Show reminder
+            showScheduledMiniOverlay()
+            lastMiniOverlayTime = now
+        }
+    }
+
+    private func showScheduledMiniOverlay() {
+        let text = defaults.string(forKey: "miniOverlayText") ?? "Posture check"
+        let icon = defaults.string(forKey: "miniOverlayIcon") ?? "sparkles"
+        let duration = defaults.object(forKey: "miniOverlayDuration") as? Double ?? 3.15
+        let holdDuration = defaults.object(forKey: "miniOverlayHoldDuration") as? Double ?? 1.5
+
+        showMiniOverlay(text: text, icon: icon, duration: duration, holdDuration: holdDuration)
     }
 
     func checkClockOutTime() {

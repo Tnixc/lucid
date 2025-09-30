@@ -1,20 +1,25 @@
 # Mini Overlay Module
 
-A lightweight, non-intrusive overlay component for displaying brief text messages with smooth animations.
+A lightweight, non-intrusive overlay component for displaying brief text messages with smooth animations and customizable icons.
 
 ## Overview
 
 The Mini Overlay is a new overlay type designed for displaying short, informative messages (like "Posture check", "Stay hydrated", etc.) without interrupting the user's workflow. It appears briefly at the bottom center of all screens with an elegant animation sequence.
 
+Configure the mini overlay through the **Settings → Mini Overlay** tab to enable automatic reminders at customizable intervals.
+
 ## Features
 
 - **Non-intrusive**: Appears at bottom center, doesn't block the main work area
-- **Non-interactive**: Ignores mouse events, won't interfere with user actions
+- **Click to dismiss**: Click anywhere on the overlay to dismiss it instantly
 - **Multi-screen support**: Displays simultaneously on all connected screens
 - **Auto-dismissing**: Automatically closes after animation completes
-- **Customizable duration**: Adjust animation speed if needed
+- **Customizable**: Adjust text, icon, duration, and frequency through settings
+- **Scheduled reminders**: Automatic reminders at configurable intervals
+- **Icon support**: Choose from 15+ SF Symbols to accompany your message
+- **Preset messages**: Quick-select common wellness reminders
 - **System integration**: Uses system accent color for visual consistency
-- **Smooth animations**: Spring-based animations throughout the sequence
+- **Smooth animations**: Interpolated shape morphing throughout the sequence
 
 ## Animation Sequence
 
@@ -23,31 +28,110 @@ The Mini Overlay follows a carefully choreographed animation:
 1. **Fly In** (0.0s) - Small dot flies up from bottom of screen
 2. **Large Circle** (0.4s) - Expands to large circle
 3. **Pill Shape** (0.75s) - Morphs horizontally into pill with text fading in
-4. **Hold** (2.2s) - Displays message for ~1.5 seconds
-5. **Shrink to Circle** (2.5s) - Text fades out, morphs back to circle
-6. **Shrink to Dot** (2.5s) - Morphs back to small dot
-7. **Fly Away** (2.8s) - Flies back down off screen
-8. **Dismiss** (3.15s) - Total animation completes
+4. **Hold** (configurable) - Displays message for 1.5-30 seconds (default: 1.5s)
+5. **Shrink to Circle** - Text fades out, morphs back to circle
+6. **Shrink to Dot** - Morphs back to small dot
+7. **Fly Away** - Flies back down off screen
+8. **Dismiss** - Animation completes
 
-**Total Duration**: ~3.15 seconds (default, customizable)
+**Total Duration**: Configurable based on animation and hold duration settings
 
-## Usage
+**Note**: Click anywhere on the overlay to dismiss it immediately at any time.
+
+## Settings Configuration
+
+### Accessing Settings
+
+1. Click the app's menu bar icon
+2. Click the gear icon to open Settings
+3. Navigate to the **Mini Overlay** tab
+
+### Available Settings
+
+#### Enable Mini Overlays
+Toggle to enable/disable automatic mini overlay reminders.
+
+#### Reminder Text
+Customize the message displayed in the overlay (e.g., "Posture check", "Stay hydrated").
+
+#### Icon
+Choose from 15+ SF Symbols to display alongside your text:
+- sparkles
+- star.fill
+- heart.fill
+- leaf.fill
+- drop.fill
+- figure.stand
+- figure.walk
+- eye.fill
+- lungs.fill
+- brain.head.profile
+- cup.and.saucer.fill
+- bell.fill
+- lightbulb.fill
+- sun.max.fill
+- moon.fill
+
+#### Animation Duration
+Adjust how long the entire animation takes (2.0 - 6.0 seconds).
+
+#### Display Duration
+Control how long the message stays visible in full (1.0 - 30.0 seconds). This is the hold time when the pill is fully expanded with text showing.
+
+#### Frequency
+Set the interval between reminders in minutes (default: 30 minutes).
+
+#### Preset Messages
+Quick-select buttons for common wellness reminders:
+- Posture check (figure.stand)
+- Stay hydrated (drop.fill)
+- Blink more (eye.fill)
+- Stretch time (figure.walk)
+- Deep breath (lungs.fill)
+- Look away (sparkles)
+
+## Programmatic Usage
 
 ### Basic Usage
 
 ```swift
+// Simple text only
 Notifier.shared.showMiniOverlay(text: "Posture check")
+
+// With icon
+Notifier.shared.showMiniOverlay(text: "Stay hydrated", icon: "drop.fill")
+
+// With custom duration
+Notifier.shared.showMiniOverlay(text: "Quick reminder", icon: "sparkles", duration: 2.0)
+
+// With custom hold duration (how long message stays visible)
+Notifier.shared.showMiniOverlay(text: "Read this carefully", icon: "book.fill", duration: 3.15, holdDuration: 5.0)
 ```
 
-### With Custom Duration
+### Advanced Usage
 
 ```swift
-// Faster animation (2 seconds total)
-Notifier.shared.showMiniOverlay(text: "Quick reminder", duration: 2.0)
+// Full customization
+let text = "Take a break"
+let icon = "figure.walk"
+let duration = 4.0
+let holdDuration = 3.0  // Message visible for 3 seconds
+Notifier.shared.showMiniOverlay(text: text, icon: icon, duration: duration, holdDuration: holdDuration)
+```</parameter>
 
-// Slower animation (5 seconds total)
-Notifier.shared.showMiniOverlay(text: "Take your time", duration: 5.0)
-```
+<old_text line=78>
+**Parameters:**
+- `text: String` - The message to display
+- `screen: NSScreen` - The screen to display on
+- `duration: TimeInterval` - Total animation duration (default: 3.15)
+- `onDismiss: @escaping () -> Void` - Callback when animation completes
+
+#### `Notifier.showMiniOverlay()`
+Public API for triggering the mini overlay.
+
+**Parameters:**
+- `text: String` - The message to display
+- `duration: TimeInterval` - Optional animation duration (default: 3.15)
 
 ## Example Messages
 
@@ -110,6 +194,8 @@ All timing values scale proportionally with the `duration` parameter:
 - **Circle size**: 60pt diameter
 - **Pill height**: 60pt
 - **Pill padding**: 24pt horizontal
+- **Icon size**: 18pt (when enabled)
+- **Icon spacing**: 8pt from text
 
 ### Typography
 - **Font size**: 18pt
@@ -118,10 +204,11 @@ All timing values scale proportionally with the `duration` parameter:
 
 ## Testing
 
-A test button is available in the menu bar dropdown:
-1. Click the menu bar icon
-2. Click "Test Mini Overlay"
-3. A random wellness message will appear
+Use the preview button in settings:
+1. Open Settings → Mini Overlay tab
+2. Configure your desired text and icon
+3. Click the "Preview" button
+4. The mini overlay will appear with your current settings
 
 ## Integration Ideas
 
@@ -151,7 +238,7 @@ The Mini Overlay is perfect for:
 
 ### Window Properties
 - **Level**: `.floating` (appears above most windows)
-- **Mouse events**: Disabled (completely non-interactive)
+- **Mouse events**: Enabled (clickable to dismiss)
 - **Collection behavior**: Joins all spaces, auxiliary to fullscreen
 - **Background**: Transparent
 
@@ -225,11 +312,30 @@ Instead of an enum with discrete phases, the new approach uses:
 
 This allows SwiftUI to interpolate between any two states smoothly
 
+## Automation
+
+The mini overlay system integrates with the app's timer to show reminders automatically:
+- Checks occur every second alongside other app timers
+- First reminder shows immediately when enabled
+- Subsequent reminders follow the configured interval
+- Reminders respect the app's active state
+- No overlapping overlays (new ones replace existing)
+
+### UserDefaults Keys
+
+The following keys are used for persistence:
+- `miniOverlayEnabled` (Bool) - Master toggle
+- `miniOverlayText` (String) - Reminder message
+- `miniOverlayIcon` (String) - SF Symbol name
+- `miniOverlayDuration` (Double) - Total animation duration in seconds
+- `miniOverlayHoldDuration` (Double) - How long message stays visible in seconds
+- `miniOverlayInterval` (Int) - Minutes between reminders
+
 ## Future Enhancements
 
 Potential improvements:
 - [ ] Custom colors per message
-- [ ] Icon support alongside text (SF Symbols with interpolation)
+- [ ] Multiple reminder profiles
 - [ ] Sound effects option
 - [ ] Multiple animation styles
 - [ ] Position customization (top/bottom/sides)
@@ -238,6 +344,8 @@ Potential improvements:
 - [ ] Do Not Disturb integration
 - [ ] Variable blur effects during animation
 - [ ] Haptic feedback integration
+- [ ] Context-aware reminders (based on app usage)
+- [ ] Custom icon uploads
 
 ## License
 

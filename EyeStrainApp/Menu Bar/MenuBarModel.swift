@@ -35,6 +35,8 @@ class MenuBarModel: ObservableObject {
         }
         // Check for bedtime reminder
         notifier.checkBedtimeTime()
+        // Check for mini overlay reminder
+        notifier.checkMiniOverlayTime()
     }
 
     func resetTimer() {

@@ -57,25 +57,6 @@ struct MenuBarView: View {
                         menuBarModel.resetTimer()
                     }
                 )
-                
-                Divider()
-                    .padding(.horizontal, 16)
-                
-                ControlCenterButton(
-                    icon: "sparkles",
-                    label: "Test Mini Overlay",
-                    action: {
-                        let messages = [
-                            "Posture check",
-                            "Stay hydrated",
-                            "Blink more",
-                            "Stretch time",
-                            "Deep breath"
-                        ]
-                        let randomMessage = messages.randomElement() ?? "Posture check"
-                        Notifier.shared.showMiniOverlay(text: randomMessage)
-                    }
-                )
             }
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)

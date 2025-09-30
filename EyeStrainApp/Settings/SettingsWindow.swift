@@ -10,6 +10,7 @@ struct SettingsWindow: View {
         case general
         case eyeStrain
         case bedtime
+        case miniOverlay
     }
 
     @State private var selectedTab: Tabs = .general
@@ -61,6 +62,14 @@ struct SettingsWindow: View {
                 ) {
                     selectedTab = .bedtime
                 }
+
+                SettingsTabButton(
+                    title: "Mini Overlay",
+                    icon: "circle.dashed.inset.fill",
+                    isSelected: selectedTab == .miniOverlay
+                ) {
+                    selectedTab = .miniOverlay
+                }
                 Spacer()
             }
             Divider()
@@ -76,6 +85,8 @@ struct SettingsWindow: View {
             EyeStrainSettingsTab()
         case .bedtime:
             BedtimeSettingsTab()
+        case .miniOverlay:
+            MiniOverlaySettingsTab()
         }
     }
 }

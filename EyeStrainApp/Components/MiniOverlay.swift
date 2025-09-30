@@ -21,7 +21,6 @@
 //
 //  Features:
 //    - Appears on all screens simultaneously
-//    - Non-interactive (ignores mouse events)
 //    - Auto-dismisses after animation completes
 //    - Uses accent color from system preferences
 //    - Smooth interpolated shape transitions
@@ -30,10 +29,16 @@
 import Cocoa
 import SwiftUI
 
+class MiniOverlayHostingView: NSHostingView<MiniOverlayView> {
+    weak var parentWindow: NSWindow?
+}
+
 func generateMiniOverlay(
     text: String,
+    icon: String? = nil,
     screen: NSScreen,
     duration: TimeInterval = 3.15,
+    holdDuration: TimeInterval = 1.5,
     onDismiss: @escaping () -> Void
 ) -> NSWindow {
     let window = NSWindow(
@@ -52,55 +57,66 @@ func generateMiniOverlay(
     window.isMovable = false
     window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
 
-    let contentView = NSHostingView(
+    let hostingView = MiniOverlayHostingView(
         rootView: MiniOverlayView(
             text: text,
+            icon: icon,
             duration: duration,
-            onDismiss: onDismiss
+            holdDuration: holdDuration,
+            onDismiss: onDismiss,
+            screen: screen,
+            parentWindow: window
         )
     )
 
-    contentView.frame = window.contentView!.bounds
-    contentView.autoresizingMask = [.width, .height]
-    window.contentView?.addSubview(contentView)
+    hostingView.frame = window.contentView!.bounds
+    hostingView.autoresizingMask = [.width, .height]
+    hostingView.parentWindow = window
+    window.contentView?.addSubview(hostingView)
 
     return window
 }
 
 struct MiniOverlayView: View {
     let text: String
+    let icon: String?
     let duration: TimeInterval
+    let holdDuration: TimeInterval
     let onDismiss: () -> Void
-    
+    let screen: NSScreen
+    let parentWindow: NSWindow?
+
     @State private var shapeWidth: CGFloat = 8
     @State private var shapeHeight: CGFloat = 8
     @State private var textOpacity: Double = 0
     @State private var overallOpacity: Double = 0
     @State private var yOffset: CGFloat = 0
-    
+    @State private var isHoveringIcon = false
+
     private let dotSize: CGFloat = 8
     private let circleSize: CGFloat = 60
     private let pillHeight: CGFloat = 60
     private let pillPadding: CGFloat = 24
-    
+
     // Animation timing multiplier based on duration
     private var timeMultiplier: Double {
         duration / 3.15
     }
-    
-    // Calculate pill width based on text
+
+    // Calculate pill width based on text and icon
     private var pillWidth: CGFloat {
         let textWidth = (text as NSString).size(
             withAttributes: [.font: NSFont.systemFont(ofSize: 18, weight: .semibold)]
         ).width
-        return textWidth + (pillPadding * 2)
+        let iconWidth: CGFloat = icon != nil ? 32 : 0 // Icon + spacing
+        return textWidth + iconWidth + (pillPadding * 2)
     }
-    
+
     var body: some View {
         ZStack {
             VStack {
                 Spacer()
-                
+
                 ZStack {
                     // The morphing capsule shape
                     Capsule()
@@ -109,38 +125,65 @@ struct MiniOverlayView: View {
                         .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 3)
                         .shadow(color: Color.accentColor.opacity(0.5), radius: 16, x: 0, y: 0)
                         .contentTransition(.interpolate)
-                    
-                    // Text that fades in/out
-                    Text(text)
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.white)
-                        .opacity(textOpacity)
-                        .contentTransition(.interpolate)
+
+                    // Text and icon that fade in/out
+                    HStack(spacing: 8) {
+                        if let icon = icon {
+                            ZStack {
+                                if isHoveringIcon {
+                                    Image(systemName: "xmark")
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundColor(.white)
+                                        .imageScale(.medium)
+                                } else {
+                                    Image(systemName: icon)
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundColor(.white)
+                                        .imageScale(.medium)
+                                }
+                            }
+                            .onHover { hovering in
+                                isHoveringIcon = hovering
+                            }
+                        }
+                        Text(text)
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                    .opacity(textOpacity)
                 }
+                .frame(width: shapeWidth, height: shapeHeight)
+                .contentShape(Circle())
+                .onHover { hovering in
+                    parentWindow?.ignoresMouseEvents = !hovering
+                }
+                .simultaneousGesture(TapGesture().onEnded {
+                    onDismiss()
+                })
                 .opacity(overallOpacity)
                 .offset(y: yOffset)
-                .padding(.bottom, 200)
+                .padding(.bottom, 60)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .allowsHitTesting(false)
+        .contentShape(Rectangle())
         .onAppear {
             startAnimation()
         }
     }
-    
+
     private func startAnimation() {
         // Initial state: dot positioned below screen
         yOffset = 200
         overallOpacity = 1
         shapeWidth = dotSize
         shapeHeight = dotSize
-        
+
         // Phase 1: Fly in from bottom as dot
         withAnimation(.easeOut(duration: 0.35 * timeMultiplier)) {
             yOffset = 0
         }
-        
+
         // Phase 2: Expand to large circle
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4 * timeMultiplier) {
             withAnimation(.spring(response: 0.45 * timeMultiplier, dampingFraction: 0.65)) {
@@ -148,7 +191,7 @@ struct MiniOverlayView: View {
                 shapeHeight = circleSize
             }
         }
-        
+
         // Phase 3: Expand to pill with text fade in
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.75 * timeMultiplier) {
             withAnimation(.spring(response: 0.55 * timeMultiplier, dampingFraction: 0.72)) {
@@ -159,9 +202,10 @@ struct MiniOverlayView: View {
                 textOpacity = 1
             }
         }
-        
-        // Phase 4: Fade out text and shrink to circle
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.2 * timeMultiplier) {
+
+        // Phase 4: Hold the pill for configured duration, then fade out text and shrink to circle
+        let holdDelay = 0.75 * timeMultiplier + holdDuration
+        DispatchQueue.main.asyncAfter(deadline: .now() + holdDelay) {
             withAnimation(.easeOut(duration: 0.2 * timeMultiplier)) {
                 textOpacity = 0
             }
@@ -170,24 +214,27 @@ struct MiniOverlayView: View {
                 shapeHeight = circleSize
             }
         }
-        
+
         // Phase 5: Shrink to dot
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5 * timeMultiplier) {
+        let shrinkDelay = holdDelay + 0.3 * timeMultiplier
+        DispatchQueue.main.asyncAfter(deadline: .now() + shrinkDelay) {
             withAnimation(.spring(response: 0.3 * timeMultiplier, dampingFraction: 0.8)) {
                 shapeWidth = dotSize
                 shapeHeight = dotSize
             }
         }
-        
+
         // Phase 6: Fly down off screen
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.8 * timeMultiplier) {
+        let flyDelay = shrinkDelay + 0.3 * timeMultiplier
+        DispatchQueue.main.asyncAfter(deadline: .now() + flyDelay) {
             withAnimation(.easeIn(duration: 0.35 * timeMultiplier)) {
                 yOffset = 200
             }
         }
-        
+
         // Phase 7: Dismiss
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.15 * timeMultiplier) {
+        let dismissDelay = flyDelay + 0.35 * timeMultiplier
+        DispatchQueue.main.asyncAfter(deadline: .now() + dismissDelay) {
             onDismiss()
         }
     }
