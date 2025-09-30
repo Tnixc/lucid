@@ -10,6 +10,9 @@ struct BedtimeSettingsTab: View {
     @State private var title: String
     @State private var message: String
     @State private var dismissAfter: Int
+    @State private var repeatReminders: Bool
+    @State private var repeatInterval: Int
+    @State private var autoDismiss: Bool
 
     init() {
         let defaults = UserDefaults.standard
@@ -49,6 +52,18 @@ struct BedtimeSettingsTab: View {
             initialValue: defaults.integer(forKey: "bedtimeDismissAfter")
         )
         if _dismissAfter.wrappedValue == 0 { _dismissAfter.wrappedValue = 30 }
+
+        _repeatReminders = State(
+            initialValue: defaults.bool(forKey: "bedtimeRepeatReminders")
+        )
+        _repeatInterval = State(
+            initialValue: defaults.integer(forKey: "bedtimeRepeatInterval")
+        )
+        if _repeatInterval.wrappedValue == 0 { _repeatInterval.wrappedValue = 15 }
+
+        _autoDismiss = State(
+            initialValue: defaults.object(forKey: "bedtimeAutoDismiss") as? Bool ?? true
+        )
     }
 
     var body: some View {
@@ -86,7 +101,6 @@ struct BedtimeSettingsTab: View {
                     endHour: endHourBinding,
                     endMinute: endMinuteBinding
                 )
-                .padding(.vertical, 8)
             }
             .padding(Style.Layout.padding)
             .background(
@@ -118,12 +132,44 @@ struct BedtimeSettingsTab: View {
             }
 
             SettingItem(
+                title: "Auto-dismiss Overlay",
+                description: "Automatically dismiss the overlay after a set time.",
+                icon: "xmark.circle"
+            ) {
+                Toggle("", isOn: autoDismissBinding)
+                    .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
+                    .scaleEffect(0.9, anchor: .trailing)
+            }
+
+            SettingItem(
                 title: "Dismiss After (seconds)",
                 description: "Time before the overlay auto-dismisses.",
                 icon: "clock"
             ) {
                 UINumberField(value: dismissAfterBinding, width: 60)
             }
+            .opacity(autoDismiss ? 1.0 : 0.5)
+            .disabled(!autoDismiss)
+
+            SettingItem(
+                title: "Repeat Reminders",
+                description: "Show reminders repeatedly during bedtime hours.",
+                icon: "repeat"
+            ) {
+                Toggle("", isOn: repeatRemindersBinding)
+                    .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
+                    .scaleEffect(0.9, anchor: .trailing)
+            }
+
+            SettingItem(
+                title: "Repeat Interval (minutes)",
+                description: "Time between repeated reminders.",
+                icon: "timer"
+            ) {
+                UINumberField(value: repeatIntervalBinding, width: 60)
+            }
+            .opacity(repeatReminders ? 1.0 : 0.5)
+            .disabled(!repeatReminders)
 
             SettingItem(
                 title: "Preview",
@@ -233,6 +279,38 @@ struct BedtimeSettingsTab: View {
             set: {
                 self.dismissAfter = $0
                 UserDefaults.standard.set($0, forKey: "bedtimeDismissAfter")
+            }
+        )
+    }
+
+    private var repeatRemindersBinding: Binding<Bool> {
+        Binding(
+            get: { self.repeatReminders },
+            set: {
+                self.repeatReminders = $0
+                UserDefaults.standard.set($0, forKey: "bedtimeRepeatReminders")
+                Notifier.shared.updateSettings()
+            }
+        )
+    }
+
+    private var repeatIntervalBinding: Binding<Int> {
+        Binding(
+            get: { self.repeatInterval },
+            set: {
+                self.repeatInterval = $0
+                UserDefaults.standard.set($0, forKey: "bedtimeRepeatInterval")
+                Notifier.shared.updateSettings()
+            }
+        )
+    }
+
+    private var autoDismissBinding: Binding<Bool> {
+        Binding(
+            get: { self.autoDismiss },
+            set: {
+                self.autoDismiss = $0
+                UserDefaults.standard.set($0, forKey: "bedtimeAutoDismiss")
             }
         )
     }

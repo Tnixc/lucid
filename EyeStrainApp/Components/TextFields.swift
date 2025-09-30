@@ -93,3 +93,53 @@ struct UINumberField: View {
         }
     }
 }
+
+struct UINumberFieldCompact: View {
+    @Binding var value: Int
+    let placeholder: String
+    let width: CGFloat?
+
+    @State private var isHovered = false
+    @State private var isFocused = false
+
+    init(
+        value: Binding<Int>,
+        placeholder: String = "",
+        width: CGFloat? = nil
+    ) {
+        _value = value
+        self.placeholder = placeholder
+        self.width = width
+    }
+
+    var body: some View {
+        TextField(placeholder, value: $value, formatter: NumberFormatter(), onEditingChanged: { editing in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isFocused = editing
+            }
+        })
+        .textFieldStyle(.plain)
+        .monospacedDigit()
+        .multilineTextAlignment(.center)
+        .font(.system(size: 13, weight: .medium))
+        .padding(.horizontal, 6)
+        .padding(.vertical, 4)
+        .frame(width: width, height: 24)
+        .background(
+            ZStack {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(isFocused ? Style.Button.bg.opacity(2.0) : Style.Button.bg)
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(
+                        isHovered || isFocused ? Style.Button.border.opacity(1.5) : Style.Button.border,
+                        lineWidth: Style.Layout.borderWidth
+                    )
+            }
+        )
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
+            }
+        }
+    }
+}

@@ -107,7 +107,9 @@ struct TimelineEditor: View {
                 ZStack(alignment: .leading) {
                     // Background timeline
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(Color(nsColor: .controlBackgroundColor).opacity(0.5))
+                        .fill(
+                            Color(nsColor: .controlBackgroundColor).opacity(0.5)
+                        )
                         .frame(height: timelineHeight)
 
                     // Hour markers
@@ -180,82 +182,94 @@ struct TimelineEditor: View {
             .frame(height: timelineHeight)
 
             // Time display with text inputs
-            HStack(spacing: 16) {
-                // Start time input
-                HStack(spacing: 8) {
+            HStack(spacing: 12) {
+                // Start time input pill
+                HStack(spacing: 10) {
                     Image(systemName: "moon.fill")
                         .foregroundColor(Style.Colors.nightTime)
-                        .font(.caption)
+                        .font(.system(size: 13))
+                        .frame(width: 16)
 
-                    HStack(spacing: 4) {
-                        NumericTextField(value: startHourBinding, range: 0 ... 23)
-                            .frame(width: 35, height: 20)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
-                            )
+                    HStack(spacing: 6) {
+                        UINumberFieldCompact(value: startHourBinding, width: 40)
 
                         Text(":")
                             .foregroundColor(.secondary)
                             .monospacedDigit()
+                            .font(.system(size: 14, weight: .medium))
 
-                        NumericTextField(value: startMinuteBinding, range: 0 ... 59)
-                            .frame(width: 35, height: 20)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
-                            )
+                        UINumberFieldCompact(
+                            value: startMinuteBinding,
+                            width: 40
+                        )
                     }
 
                     Text(formatTime(hour: startHour, minute: startMinute))
-                        .font(.caption)
+                        .font(.system(size: 12))
                         .monospacedDigit()
                         .foregroundColor(.secondary)
                         .contentTransition(.numericText())
+                        .animation(.snappy(duration: 0.05), value: startHour)
+                        .animation(.snappy(duration: 0.05), value: startMinute)
+                        .frame(width: 65)
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Style.Box.bg)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Style.Box.border, lineWidth: 1)
+                        )
+                )
 
                 Spacer()
 
                 Image(systemName: "arrow.right")
-                    .font(.caption2)
+                    .font(.system(size: 11))
                     .foregroundColor(.secondary)
 
                 Spacer()
 
-                // End time input
-                HStack(spacing: 8) {
+                // End time input pill
+                HStack(spacing: 10) {
                     Image(systemName: "sunrise.fill")
                         .foregroundColor(Style.Colors.morningTime)
-                        .font(.caption)
+                        .font(.system(size: 13))
+                        .frame(width: 16)
 
-                    HStack(spacing: 4) {
-                        NumericTextField(value: endHourBinding, range: 0 ... 23)
-                            .frame(width: 35, height: 20)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
-                            )
+                    HStack(spacing: 6) {
+                        UINumberFieldCompact(value: endHourBinding, width: 40)
 
                         Text(":")
                             .foregroundColor(.secondary)
                             .monospacedDigit()
+                            .font(.system(size: 14, weight: .medium))
 
-                        NumericTextField(value: endMinuteBinding, range: 0 ... 59)
-                            .frame(width: 35, height: 20)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
-                            )
+                        UINumberFieldCompact(value: endMinuteBinding, width: 40)
                     }
 
                     Text(formatTime(hour: endHour, minute: endMinute))
-                        .font(.caption)
+                        .font(.system(size: 12))
                         .monospacedDigit()
                         .foregroundColor(.secondary)
                         .contentTransition(.numericText())
+                        .animation(.snappy(duration: 0.05), value: endHour)
+                        .animation(.snappy(duration: 0.05), value: endMinute)
+                        .frame(width: 65)
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Style.Box.bg)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Style.Box.border, lineWidth: 1)
+                        )
+                )
             }
-            .padding(.horizontal, 4)
         }
     }
 
@@ -264,6 +278,7 @@ struct TimelineEditor: View {
             get: { self.startHour },
             set: { newValue in
                 self.startHour = max(0, min(23, newValue))
+                Notifier.shared.updateSettings()
             }
         )
     }
@@ -273,6 +288,7 @@ struct TimelineEditor: View {
             get: { self.startMinute },
             set: { newValue in
                 self.startMinute = max(0, min(59, newValue))
+                Notifier.shared.updateSettings()
             }
         )
     }
@@ -282,6 +298,7 @@ struct TimelineEditor: View {
             get: { self.endHour },
             set: { newValue in
                 self.endHour = max(0, min(23, newValue))
+                Notifier.shared.updateSettings()
             }
         )
     }
@@ -291,6 +308,7 @@ struct TimelineEditor: View {
             get: { self.endMinute },
             set: { newValue in
                 self.endMinute = max(0, min(59, newValue))
+                Notifier.shared.updateSettings()
             }
         )
     }
@@ -301,7 +319,11 @@ struct TimelineEditor: View {
             minute: startMinute,
             width: width
         )
-        let endPosition = position(hour: endHour, minute: endMinute, width: width)
+        let endPosition = position(
+            hour: endHour,
+            minute: endMinute,
+            width: width
+        )
         let handleRadius = handleWidth / 2
 
         // Handle wrapping around midnight
@@ -319,7 +341,9 @@ struct TimelineEditor: View {
                     topTrailingRadius: 8
                 )
                 .fill(
-                    Gradient(colors: [Style.Colors.nightTime, Style.Colors.morningTime]).opacity(0.3)
+                    Gradient(colors: [
+                        Style.Colors.nightTime, Style.Colors.morningTime,
+                    ]).opacity(0.3)
                 )
                 .overlay(
                     UnevenRoundedRectangle(
@@ -370,7 +394,10 @@ struct TimelineEditor: View {
                     )
                     .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
                 )
-                .frame(width: endPosition - startPosition, height: timelineHeight)
+                .frame(
+                    width: endPosition - startPosition,
+                    height: timelineHeight
+                )
                 .offset(x: startPosition)
             }
         }
@@ -391,9 +418,10 @@ struct TimelineEditor: View {
             Text(formatTime(hour: hour, minute: minute))
                 .font(.system(size: 10, weight: .semibold))
                 .monospacedDigit()
-                .animation(.snappy)
                 .contentTransition(.numericText())
-                .foregroundColor(Color.primary)
+                .animation(.snappy(duration: 0.05), value: hour)
+                .animation(.snappy(duration: 0.05), value: minute)
+                .foregroundColor(color)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(

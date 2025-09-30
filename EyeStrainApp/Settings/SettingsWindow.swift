@@ -18,7 +18,7 @@ struct SettingsWindow: View {
         VStack(spacing: 0) {
             // Toolbar border divider
             Divider()
-            
+
             HStack {
                 sidebar.padding(.bottom, Style.Layout.padding)
                 Spacer()
@@ -37,7 +37,7 @@ struct SettingsWindow: View {
     var sidebar: some View {
         HStack {
             VStack(spacing: Style.Layout.paddingSM) {
-              Spacer().frame(height: Style.Layout.paddingSM)
+                Spacer().frame(height: Style.Layout.paddingSM)
                 SettingsTabButton(
                     title: "General",
                     icon: "gear",

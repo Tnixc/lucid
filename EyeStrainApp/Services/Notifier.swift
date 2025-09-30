@@ -12,6 +12,7 @@ class Notifier {
     private var bedtimeStartTime: Date?
     private var bedtimeEndTime: Date?
     private var lastBedtimeCheck: Date?
+    private var lastBedtimeReminderTime: Date?
     private let defaults = UserDefaults.standard
     private var activeDays: Set<Int> = []
     private var clockOutUseOverlay: Bool?
@@ -23,7 +24,7 @@ class Notifier {
         requestNotificationPermission()
     }
 
-    func showOverlay(title: String, message: String, dismissAfter: TimeInterval) {
+    func showOverlay(title: String, message: String, dismissAfter: TimeInterval, autoDismiss: Bool = true) {
         overlayWindow = generateOverlay(
             title: title,
             message: message,
@@ -36,10 +37,12 @@ class Notifier {
         )
 
         overlayWindow?.makeKeyAndOrderFront(nil)
-        DispatchQueue.main.asyncAfter(deadline: .now() + dismissAfter) {
-            [weak self] in
-            self?.overlayWindow?.close()
-            self?.overlayWindow = nil
+        if autoDismiss {
+            DispatchQueue.main.asyncAfter(deadline: .now() + dismissAfter) {
+                [weak self] in
+                self?.overlayWindow?.close()
+                self?.overlayWindow = nil
+            }
         }
     }
 
@@ -64,7 +67,8 @@ class Notifier {
             defaults.integer(forKey: "bedtimeDismissAfter")
         )
         if dismissAfter == 0 { dismissAfter = 30 } // default 30 seconds
-        showOverlay(title: title, message: message, dismissAfter: dismissAfter)
+        let autoDismiss = defaults.object(forKey: "bedtimeAutoDismiss") as? Bool ?? true
+        showOverlay(title: title, message: message, dismissAfter: dismissAfter, autoDismiss: autoDismiss)
     }
 
     private func setupKeyboardShortcuts() {
@@ -177,11 +181,35 @@ class Notifier {
         }
 
         if currentlyInBedtime {
-            // Show reminder once per entry into bedtime range
-            if lastBedtimeCheck == nil || !isInBedtimeRange(lastBedtimeCheck!) {
-                showBedtimeReminder()
+            let repeatReminders = defaults.bool(forKey: "bedtimeRepeatReminders")
+
+            if repeatReminders {
+                // Show reminder repeatedly at intervals
+                if lastBedtimeReminderTime == nil {
+                    // First reminder when entering bedtime
+                    showBedtimeReminder()
+                    lastBedtimeReminderTime = now
+                } else {
+                    // Check if enough time has passed for a repeat reminder
+                    let repeatInterval = TimeInterval(defaults.integer(forKey: "bedtimeRepeatInterval") * 60)
+                    let interval = repeatInterval > 0 ? repeatInterval : 15 * 60 // default 15 minutes
+                    if now.timeIntervalSince(lastBedtimeReminderTime!) >= interval {
+                        showBedtimeReminder()
+                        lastBedtimeReminderTime = now
+                    }
+                }
                 lastBedtimeCheck = now
+            } else {
+                // Show reminder once per entry into bedtime range
+                if lastBedtimeCheck == nil || !isInBedtimeRange(lastBedtimeCheck!) {
+                    showBedtimeReminder()
+                    lastBedtimeCheck = now
+                    lastBedtimeReminderTime = now
+                }
             }
+        } else {
+            // Reset reminder time when leaving bedtime range
+            lastBedtimeReminderTime = nil
         }
     }
 

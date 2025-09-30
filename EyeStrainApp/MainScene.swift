@@ -7,14 +7,14 @@ struct MainScene: Scene {
             SettingsWindow()
                 .background(VisualEffect().ignoresSafeArea())
                 .frame(
-                    minWidth: 500,
+                    minWidth: 800,
                     minHeight: 500
                 )
                 .toolbar { Text("Eye Strain Settings").fontWeight(.bold).font(.title3) }
         }
         .windowResizability(WindowResizability.contentSize)
         .defaultSize(
-            width: 500,
+            width: 800,
             height: 500
         )
         .windowStyle(.hiddenTitleBar)
