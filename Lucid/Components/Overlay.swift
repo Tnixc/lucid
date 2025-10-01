@@ -164,8 +164,7 @@ struct OverlayView: View {
                                 },
                                 label: "Sleep",
                                 icon: "lock",
-                                width: 140,
-                                
+                                width: 140
                             )
 
                             UIButton(

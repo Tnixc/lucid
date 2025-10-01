@@ -1,8 +1,8 @@
 // EventService.swift
 // Based on: https://www.woodys-findings.com/posts/programmatically-logout-a-user-in-swift/
 
-import Foundation
 import Carbon
+import Foundation
 import IOKit.pwr_mgt
 
 enum EventService {}
@@ -10,7 +10,6 @@ enum EventService {}
 // MARK: - Logic
 
 extension EventService {
-
     static func send(event eventType: AppleEventType) throws {
         // target the login window process for the event
         var loginWindowSerialNumber = ProcessSerialNumber(
@@ -88,7 +87,6 @@ extension EventService {
 // MARK: - Models
 
 extension EventService {
-
     enum AppleEventType {
         case shutdownComputer
         case restartComputer

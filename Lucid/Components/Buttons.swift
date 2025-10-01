@@ -52,7 +52,7 @@ struct UIButton: View {
             .frame(width: width, height: height ?? Style.Button.height)
             .background(
                 isHovered && destructive ? Color.red.opacity(0.2) :
-                isHovered ? Style.Button.bg.opacity(1.5) : Style.Button.bg
+                    isHovered ? Style.Button.bg.opacity(1.5) : Style.Button.bg
             )
             .clipShape(
                 RoundedRectangle(cornerRadius: Style.Layout.cornerRadius)
@@ -64,7 +64,7 @@ struct UIButton: View {
                 RoundedRectangle(cornerRadius: Style.Layout.cornerRadius)
                     .stroke(
                         isHovered && destructive ? Color.red :
-                        isHovered ? Style.Button.border.opacity(1.5) : Style.Button.border,
+                            isHovered ? Style.Button.border.opacity(1.5) : Style.Button.border,
                         lineWidth: Style.Layout.borderWidth
                     )
             )
