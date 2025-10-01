@@ -4,7 +4,9 @@
 
 
 
-https://github.com/user-attachments/assets/8241efe4-3ddc-460c-bddc-9a2155a73f04
+https://github.com/user-attachments/assets/30b63f7e-5a06-4154-b586-a513e89f5552
+
+
 
 ###### please ignore the artifacting of the background, it's from the recording.
 
@@ -96,7 +98,8 @@ Intelligent bedtime notifications with a **fully custom-designed UI** to help ma
 - **Preview functionality**: Test overlays with current settings before committing
 - **Global alerts toggle**: Master switch to enable/disable all reminders
 
-<img width="948" height="799" alt="image" src="https://github.com/user-attachments/assets/bd5df216-b556-4eef-9af1-083891f1a049" />
+<img width="828" height="1042" alt="image" src="https://github.com/user-attachments/assets/da97e77b-bf28-43f0-9b37-f733224b1f5f" />
+
 
 
 ### 🎥 Presentation Mode Detection (NEW)
@@ -275,17 +278,14 @@ All settings are stored in `UserDefaults` with the following keys:
 
 ## Screenshots
 
-### Settings Window
-
-<img width="600" alt="image" src="https://github.com/user-attachments/assets/dedc3e06-b5ae-45e9-87f5-7604b41a020b" />
-
 ### Eye Strain Settings
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/92415ed9-32e9-45c2-b91b-1a6aa223ad54" />
 
 ### Mini Overlay Settings
 
-<img width="600" alt="image" src="https://github.com/user-attachments/assets/4a5c4e1f-e701-4944-99d7-7799b57b2f07" />
+<img width="615" height="995" alt="image" src="https://github.com/user-attachments/assets/315532fe-e3a3-44bb-866c-46f1c37f59ae" />
+
 
 ## Contributing
 
