@@ -9,16 +9,16 @@ https://github.com/user-attachments/assets/8241efe4-3ddc-460c-bddc-9a2155a73f04
 ###### please ignore the artifacting of the background, it's from the recording.
 
 
-A macOS menu bar application designed to help reduce eye strain, maintain good posture, and encourage healthy work habits through customizable reminders and overlays.
+A macOS menu bar application with **custom-designed UI components** to help reduce eye strain, maintain good posture, and encourage healthy work habits through customizable reminders and overlays.
 
 ## ✨ Key Features
 
 - 🔔 **Eye Strain Reminders** - Full-screen overlays following the 20-20-20 rule
 - ✨ **Mini Overlay Reminders** - Non-intrusive animated wellness reminders
-- 🌙 **Bedtime Reminders** - Smart sleep schedule notifications
-- 🎥 **Presentation Mode** - Auto-pause during screen sharing (NEW)
-- 🔊 **Sound Effects** - Customizable audio notifications (NEW)
-- 🎨 **Full Customization** - Colors, timing, sounds, and more
+- 🌙 **Bedtime Reminders** - Custom-designed UI with system actions and color customization
+- 🎥 **Presentation Mode** - Auto-pause during screen sharing
+- 🔊 **Sound Effects** - Customizable audio notifications
+- 🎨 **Custom UI Components** - Handcrafted interface elements throughout the app
 
 ## Features
 
@@ -67,14 +67,17 @@ https://github.com/user-attachments/assets/88542cdf-c534-40a6-8461-5bb878fd7adb
 
 ### 🌙 Bedtime Reminders
 
-Intelligent bedtime notifications to help maintain healthy sleep schedules.
+Intelligent bedtime notifications with a **fully custom-designed UI** to help maintain healthy sleep schedules.
 
-- **Custom time range**: Set your preferred bedtime hours using visual timeline editor
+- **Visual timeline editor**: Custom-built interactive time range selector with drag handles
+- **Customizable colors**: Choose custom background and foreground colors for bedtime overlays (NEW)
+- **System action buttons**: Quick access to Log Out, Sleep, and Shut Down directly from the bedtime overlay (NEW)
+- **Custom UI components**: Handcrafted buttons and interface elements designed specifically for nighttime use
 - **Repeating reminders**: Optional periodic reminders throughout bedtime hours
 - **Configurable intervals**: Control how often reminders repeat
 - **Auto-dismiss option**: Choose whether overlays auto-dismiss or require manual action
 - **Custom messaging**: Personalize title and message for bedtime notifications
-- **Persistent mode**: Continuously check and show overlay if past bedtime (NEW)
+- **Persistent mode**: Continuously check and show overlay if past bedtime
 
 <img width="946" height="973" alt="image" src="https://github.com/user-attachments/assets/5d343528-6e9f-4578-b523-f71e6f3a6730" />
 
@@ -171,10 +174,11 @@ open Lucid.xcodeproj
 
 ## Technology Stack
 
-- **SwiftUI**: Modern declarative UI framework
+- **SwiftUI**: Modern declarative UI framework with custom-built components
 - **AppKit**: Native macOS window and menu bar integration
 - **Combine**: Reactive state management
 - **UserDefaults**: Persistent settings storage
+- **Custom UI Design**: Handcrafted buttons, overlays, and interactive elements
 
 ### Dependencies
 
@@ -258,6 +262,9 @@ All settings are stored in `UserDefaults` with the following keys:
 - `bedtimeRepeatInterval`: Integer (minutes)
 - `bedtimeAutoDismiss`: Boolean
 - `bedtimePersistent`: Boolean
+- `bedtimeBackgroundColor`: Data (NSColor archived)
+- `bedtimeForegroundColor`: Data (NSColor archived)
+- `bedtimeUseCustomColors`: Boolean
 
 ### Sound & Presentation Settings (NEW)
 
@@ -288,6 +295,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ### Version "Working Hell yeah" (Latest)
 
+- ✅ **Custom Bedtime UI** - Fully redesigned bedtime overlay with custom colors
+- ✅ **System Action Buttons** - Log out, sleep, and shut down from bedtime overlay
 - ✅ **Presentation Mode Detection** - Auto-pause during screen sharing
 - ✅ **Sound Effects** - 10 customizable notification sounds
 - ✅ **Enhanced Mini Overlays** - Custom colors and vertical offset
