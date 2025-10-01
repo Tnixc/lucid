@@ -51,6 +51,7 @@ struct Lucid: App {
             "miniOverlayIcon": "sparkles",
             "miniOverlayDuration": 3.15,
             "miniOverlayHoldDuration": 1.5,
+            "miniOverlayVerticalOffset": 60,
 
             // Clock Out
             "clockOutEnabled": false,

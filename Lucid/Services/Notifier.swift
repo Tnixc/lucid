@@ -71,7 +71,7 @@ class Notifier {
         }
     }
 
-    func showMiniOverlay(text: String, icon: String? = nil, duration: TimeInterval = 3.15, holdDuration: TimeInterval = 1.5, isPreview: Bool = false) {
+    func showMiniOverlay(text: String, icon: String? = nil, duration: TimeInterval = 3.15, holdDuration: TimeInterval = 1.5, backgroundColor: Color? = nil, foregroundColor: Color? = nil, verticalOffset: CGFloat = 60, isPreview: Bool = false) {
         // Skip if settings window is open (unless this is a preview)
         guard isPreview || !AppState.shared.isSettingsWindowOpen else {
             return
@@ -95,6 +95,9 @@ class Notifier {
                 screen: screen,
                 duration: duration,
                 holdDuration: holdDuration,
+                backgroundColor: backgroundColor,
+                foregroundColor: foregroundColor,
+                verticalOffset: verticalOffset,
                 onDismiss: {
                     [weak self] in
                     self?.miniOverlayWindows.forEach { $0.close() }
@@ -256,8 +259,27 @@ class Notifier {
         let icon = defaults.string(forKey: "miniOverlayIcon") ?? "sparkles"
         let duration = defaults.object(forKey: "miniOverlayDuration") as? Double ?? 3.15
         let holdDuration = defaults.object(forKey: "miniOverlayHoldDuration") as? Double ?? 1.5
+        let verticalOffset = CGFloat(defaults.integer(forKey: "miniOverlayVerticalOffset"))
 
-        showMiniOverlay(text: text, icon: icon, duration: duration, holdDuration: holdDuration)
+        // Load custom colors if enabled
+        var backgroundColor: Color? = nil
+        var foregroundColor: Color? = nil
+
+        if defaults.bool(forKey: "miniOverlayUseCustomColors") {
+            if let bgColorData = defaults.data(forKey: "miniOverlayBackgroundColor"),
+               let nsColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: bgColorData)
+            {
+                backgroundColor = Color(nsColor)
+            }
+
+            if let fgColorData = defaults.data(forKey: "miniOverlayForegroundColor"),
+               let nsColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: fgColorData)
+            {
+                foregroundColor = Color(nsColor)
+            }
+        }
+
+        showMiniOverlay(text: text, icon: icon, duration: duration, holdDuration: holdDuration, backgroundColor: backgroundColor, foregroundColor: foregroundColor, verticalOffset: verticalOffset)
     }
 
     func checkClockOutTime() {

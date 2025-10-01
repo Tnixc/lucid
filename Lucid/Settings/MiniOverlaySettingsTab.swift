@@ -9,6 +9,10 @@ struct MiniOverlaySettingsTab: View {
     @State private var interval: Int
     @State private var icon: String
     @State private var showingIconPicker: Bool = false
+    @State private var backgroundColor: NSColor
+    @State private var foregroundColor: NSColor
+    @State private var useCustomColors: Bool
+    @State private var verticalOffset: Int
 
     private let defaults = UserDefaults.standard
 
@@ -56,6 +60,34 @@ struct MiniOverlaySettingsTab: View {
 
         _icon = State(
             initialValue: defaults.string(forKey: "miniOverlayIcon") ?? "sparkles"
+        )
+
+        // Load custom colors
+        let defaultBgColor = NSColor.systemBlue
+        let defaultFgColor = NSColor.white
+
+        if let bgColorData = defaults.data(forKey: "miniOverlayBackgroundColor"),
+           let bgColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: bgColorData)
+        {
+            _backgroundColor = State(initialValue: bgColor)
+        } else {
+            _backgroundColor = State(initialValue: defaultBgColor)
+        }
+
+        if let fgColorData = defaults.data(forKey: "miniOverlayForegroundColor"),
+           let fgColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: fgColorData)
+        {
+            _foregroundColor = State(initialValue: fgColor)
+        } else {
+            _foregroundColor = State(initialValue: defaultFgColor)
+        }
+
+        _useCustomColors = State(
+            initialValue: defaults.bool(forKey: "miniOverlayUseCustomColors")
+        )
+
+        _verticalOffset = State(
+            initialValue: defaults.integer(forKey: "miniOverlayVerticalOffset")
         )
     }
 
@@ -186,13 +218,61 @@ struct MiniOverlaySettingsTab: View {
                 }
 
                 SettingItem(
+                    title: "Use Custom Colors",
+                    description: "Override the system accent color with custom colors.",
+                    icon: "paintpalette"
+                ) {
+                    Toggle("", isOn: useCustomColorsBinding)
+                        .toggleStyle(.switch)
+                }
+
+                if useCustomColors {
+                    SettingItem(
+                        title: "Background Color",
+                        description: "Color of the mini overlay background.",
+                        icon: "circle.fill"
+                    ) {
+                        ColorPicker("", selection: backgroundColorBinding, supportsOpacity: false)
+                            .labelsHidden()
+                    }
+
+                    SettingItem(
+                        title: "Foreground Color",
+                        description: "Color of the text and icon.",
+                        icon: "textformat"
+                    ) {
+                        ColorPicker("", selection: foregroundColorBinding, supportsOpacity: false)
+                            .labelsHidden()
+                    }
+                }
+
+                SettingItem(
+                    title: "Vertical Offset (pixels)",
+                    description: "Distance from the bottom of the screen.",
+                    icon: "arrow.up.and.down"
+                ) {
+                    UINumberField(value: verticalOffsetBinding, width: 60)
+                }
+
+                SettingItem(
                     title: "Preview",
                     description: "Show a preview of the mini overlay reminder.",
                     icon: "eye"
                 ) {
                     UIButton(
                         action: {
-                            Notifier.shared.showMiniOverlay(text: text, icon: icon, duration: duration, holdDuration: holdDuration, isPreview: true)
+                            let bgColor = useCustomColors ? Color(backgroundColor) : nil
+                            let fgColor = useCustomColors ? Color(foregroundColor) : nil
+                            Notifier.shared.showMiniOverlay(
+                                text: text,
+                                icon: icon,
+                                duration: duration,
+                                holdDuration: holdDuration,
+                                backgroundColor: bgColor,
+                                foregroundColor: fgColor,
+                                verticalOffset: CGFloat(verticalOffset),
+                                isPreview: true
+                            )
                         },
                         label: "Preview",
                         width: 120
@@ -317,6 +397,52 @@ struct MiniOverlaySettingsTab: View {
                 self.interval = $0
                 defaults.set($0, forKey: "miniOverlayInterval")
                 Notifier.shared.updateSettings()
+            }
+        )
+    }
+
+    private var useCustomColorsBinding: Binding<Bool> {
+        Binding(
+            get: { self.useCustomColors },
+            set: {
+                self.useCustomColors = $0
+                defaults.set($0, forKey: "miniOverlayUseCustomColors")
+            }
+        )
+    }
+
+    private var backgroundColorBinding: Binding<Color> {
+        Binding(
+            get: { Color(self.backgroundColor) },
+            set: { newValue in
+                let nsColor = NSColor(newValue)
+                self.backgroundColor = nsColor
+                if let colorData = try? NSKeyedArchiver.archivedData(withRootObject: nsColor, requiringSecureCoding: false) {
+                    defaults.set(colorData, forKey: "miniOverlayBackgroundColor")
+                }
+            }
+        )
+    }
+
+    private var foregroundColorBinding: Binding<Color> {
+        Binding(
+            get: { Color(self.foregroundColor) },
+            set: { newValue in
+                let nsColor = NSColor(newValue)
+                self.foregroundColor = nsColor
+                if let colorData = try? NSKeyedArchiver.archivedData(withRootObject: nsColor, requiringSecureCoding: false) {
+                    defaults.set(colorData, forKey: "miniOverlayForegroundColor")
+                }
+            }
+        )
+    }
+
+    private var verticalOffsetBinding: Binding<Int> {
+        Binding(
+            get: { self.verticalOffset },
+            set: {
+                self.verticalOffset = $0
+                defaults.set($0, forKey: "miniOverlayVerticalOffset")
             }
         )
     }

@@ -39,6 +39,9 @@ func generateMiniOverlay(
     screen: NSScreen,
     duration: TimeInterval = 3.15,
     holdDuration: TimeInterval = 1.5,
+    backgroundColor: Color? = nil,
+    foregroundColor: Color? = nil,
+    verticalOffset: CGFloat = 60,
     onDismiss: @escaping () -> Void
 ) -> NSWindow {
     let window = NSWindow(
@@ -63,6 +66,9 @@ func generateMiniOverlay(
             icon: icon,
             duration: duration,
             holdDuration: holdDuration,
+            backgroundColor: backgroundColor,
+            foregroundColor: foregroundColor,
+            verticalOffset: verticalOffset,
             onDismiss: onDismiss,
             screen: screen,
             parentWindow: window
@@ -81,6 +87,9 @@ struct MiniOverlayView: View {
     let icon: String?
     let duration: TimeInterval
     let holdDuration: TimeInterval
+    let backgroundColor: Color?
+    let foregroundColor: Color?
+    let verticalOffset: CGFloat
     let onDismiss: () -> Void
     let screen: NSScreen
     let parentWindow: NSWindow?
@@ -88,9 +97,18 @@ struct MiniOverlayView: View {
     @State private var shapeWidth: CGFloat = 8
     @State private var shapeHeight: CGFloat = 8
     @State private var textOpacity: Double = 0
+    @State private var iconOpacity: Double = 0
     @State private var overallOpacity: Double = 0
     @State private var yOffset: CGFloat = 0
     @State private var isHoveringIcon = false
+
+    private var bgColor: Color {
+        backgroundColor ?? Color.accentColor
+    }
+
+    private var fgColor: Color {
+        foregroundColor ?? Color.white
+    }
 
     private let dotSize: CGFloat = 8
     private let circleSize: CGFloat = 60
@@ -119,37 +137,39 @@ struct MiniOverlayView: View {
                 ZStack {
                     // The morphing capsule shape
                     Capsule()
-                        .fill(Color.accentColor)
+                        .fill(bgColor)
                         .frame(width: shapeWidth, height: shapeHeight)
                         .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 3)
-                        .shadow(color: Color.accentColor.opacity(0.5), radius: 16, x: 0, y: 0)
+                        .shadow(color: bgColor.opacity(0.5), radius: 16, x: 0, y: 0)
                         .contentTransition(.interpolate)
 
                     // Text and icon that fade in/out
-                    HStack(spacing: 8) {
+                    HStack(spacing: 10) {
                         if let icon = icon {
                             ZStack {
                                 if isHoveringIcon {
                                     Image(systemName: "xmark")
                                         .font(.system(size: 18, weight: .semibold))
-                                        .foregroundColor(.white)
+                                        .foregroundColor(fgColor)
                                         .imageScale(.medium)
                                 } else {
                                     Image(systemName: icon)
                                         .font(.system(size: 18, weight: .semibold))
-                                        .foregroundColor(.white)
+                                        .foregroundColor(fgColor)
                                         .imageScale(.medium)
                                 }
                             }
+                            .opacity(iconOpacity)
                             .onHover { hovering in
                                 isHoveringIcon = hovering
                             }
                         }
                         Text(text)
                             .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(.white)
+                            .foregroundColor(fgColor)
+                            .opacity(textOpacity)
+                            .fixedSize()
                     }
-                    .opacity(textOpacity)
                 }
                 .frame(width: shapeWidth, height: shapeHeight)
                 .contentShape(Circle())
@@ -161,7 +181,7 @@ struct MiniOverlayView: View {
                 })
                 .opacity(overallOpacity)
                 .offset(y: yOffset)
-                .padding(.bottom, 60)
+                .padding(.bottom, verticalOffset)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -191,24 +211,37 @@ struct MiniOverlayView: View {
             }
         }
 
-        // Phase 3: Expand to pill with text fade in
+        // Phase 3: Expand to pill, then fade in icon and text
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.75 * timeMultiplier) {
             withAnimation(.spring(response: 0.55 * timeMultiplier, dampingFraction: 0.72)) {
                 shapeWidth = pillWidth
                 shapeHeight = pillHeight
             }
-            withAnimation(.easeIn(duration: 0.3 * timeMultiplier)) {
-                textOpacity = 1
+
+            // Fade in icon first, then text after pill expansion starts
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15 * timeMultiplier) {
+                withAnimation(.easeIn(duration: 0.25 * timeMultiplier)) {
+                    iconOpacity = 1
+                }
+                // Fade in text slightly after icon
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1 * timeMultiplier) {
+                    withAnimation(.easeIn(duration: 0.25 * timeMultiplier)) {
+                        textOpacity = 1
+                    }
+                }
             }
         }
 
-        // Phase 4: Hold the pill for configured duration, then fade out text and shrink to circle
+        // Phase 4: Hold the pill for configured duration, then fade out text and icon, then shrink to circle
         let holdDelay = 0.75 * timeMultiplier + holdDuration
         DispatchQueue.main.asyncAfter(deadline: .now() + holdDelay) {
-            withAnimation(.easeOut(duration: 0.2 * timeMultiplier)) {
+            withAnimation(.easeOut(duration: 0.15 * timeMultiplier)) {
                 textOpacity = 0
             }
-            withAnimation(.spring(response: 0.35 * timeMultiplier, dampingFraction: 0.8).delay(0.1 * timeMultiplier)) {
+            withAnimation(.easeOut(duration: 0.15 * timeMultiplier).delay(0.05 * timeMultiplier)) {
+                iconOpacity = 0
+            }
+            withAnimation(.spring(response: 0.35 * timeMultiplier, dampingFraction: 0.8).delay(0.15 * timeMultiplier)) {
                 shapeWidth = circleSize
                 shapeHeight = circleSize
             }
