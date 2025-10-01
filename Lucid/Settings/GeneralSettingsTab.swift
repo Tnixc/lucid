@@ -65,146 +65,148 @@ struct GeneralSettingsTab: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Style.Layout.padding) {
-            Text("General").font(.title).padding()
+        ScrollView {
+            VStack(alignment: .leading, spacing: Style.Layout.padding) {
+                Text("General").font(.title).padding()
 
-            SettingItem(
-                title: "Launch at Login",
-                description:
-                "Automatically start Lucid when you log in.",
-                icon: "power"
-            ) {
-                Toggle("", isOn: launchAtLoginBinding)
-                    .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
-                    .scaleEffect(0.9, anchor: .trailing)
-            }
-
-            SettingItem(
-                title: "Dismiss Overlay Hotkey",
-                description: "Keyboard shortcut to dismiss any overlay.",
-                icon: "keyboard"
-            ) {
-                KeyboardShortcuts.Recorder(for: .dismissOverlay)
-            }
-
-            SettingItem(
-                title: "Overlay Opacity",
-                description: "Material thickness for overlay background.",
-                icon: "circle.lefthalf.filled"
-            ) {
-                UIDropdown(
-                    selectedOption: overlayMaterialBinding,
-                    options: OverlayMaterial.allCases,
-                    optionToString: { $0.rawValue },
-                    width: 150,
-                    height: 40
-                )
-            }
-            .zIndex(100)
-
-            SettingItem(
-                title: "Click to Dismiss",
-                description:
-                "Allow clicking on the overlay to dismiss it. Not recommened.",
-                icon: "hand.tap"
-            ) {
-                Toggle("", isOn: clickToDismissBinding)
-                    .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
-                    .scaleEffect(0.9, anchor: .trailing)
-            }
-
-            SettingItem(
-                title: "Preview",
-                description: "Test the overlay with current opacity setting.",
-                icon: "eye"
-            ) {
-                UIButton(
-                    action: {
-                        Notifier.shared.showOverlay(
-                            title: "Overlay Preview",
-                            message:
-                            "This is how your overlays will look with the current opacity setting.",
-                            dismissAfter: 5.0,
-                            isPreview: true
-                        )
-                    },
-                    label: "Preview",
-                    width: 120
-                )
-            }
-
-            SettingItem(
-                title: "Sound Effects",
-                description: "Play a sound when reminders appear.",
-                icon: "speaker.wave.2"
-            ) {
-                Toggle("", isOn: soundEffectsEnabledBinding)
-                    .toggleStyle(.switch)
-            }
-
-            if soundEffectsEnabled {
                 SettingItem(
-                    title: "Sound",
-                    description: "Choose a notification sound.",
-                    icon: "music.note"
+                    title: "Launch at Login",
+                    description:
+                    "Automatically start Lucid when you log in.",
+                    icon: "power"
                 ) {
-                    Picker("", selection: reminderSoundEffectBinding) {
-                        ForEach(SoundManager.SoundEffect.allCases, id: \.rawValue) { sound in
-                            Text(sound.displayName).tag(sound.rawValue)
+                    Toggle("", isOn: launchAtLoginBinding)
+                        .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
+                        .scaleEffect(0.9, anchor: .trailing)
+                }
+
+                SettingItem(
+                    title: "Dismiss Overlay Hotkey",
+                    description: "Keyboard shortcut to dismiss any overlay.",
+                    icon: "keyboard"
+                ) {
+                    KeyboardShortcuts.Recorder(for: .dismissOverlay)
+                }
+
+                SettingItem(
+                    title: "Overlay Opacity",
+                    description: "Material thickness for overlay background.",
+                    icon: "circle.lefthalf.filled"
+                ) {
+                    UIDropdown(
+                        selectedOption: overlayMaterialBinding,
+                        options: OverlayMaterial.allCases,
+                        optionToString: { $0.rawValue },
+                        width: 150,
+                        height: 40
+                    )
+                }
+                .zIndex(100)
+
+                SettingItem(
+                    title: "Click to Dismiss",
+                    description:
+                    "Allow clicking on the overlay to dismiss it. Not recommened.",
+                    icon: "hand.tap"
+                ) {
+                    Toggle("", isOn: clickToDismissBinding)
+                        .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
+                        .scaleEffect(0.9, anchor: .trailing)
+                }
+
+                SettingItem(
+                    title: "Preview",
+                    description: "Test the overlay with current opacity setting.",
+                    icon: "eye"
+                ) {
+                    UIButton(
+                        action: {
+                            Notifier.shared.showOverlay(
+                                title: "Overlay Preview",
+                                message:
+                                "This is how your overlays will look with the current opacity setting.",
+                                dismissAfter: 5.0,
+                                isPreview: true
+                            )
+                        },
+                        label: "Preview",
+                        width: 120
+                    )
+                }
+
+                SettingItem(
+                    title: "Sound Effects",
+                    description: "Play a sound when reminders appear.",
+                    icon: "speaker.wave.2"
+                ) {
+                    Toggle("", isOn: soundEffectsEnabledBinding)
+                        .toggleStyle(.switch)
+                }
+
+                if soundEffectsEnabled {
+                    SettingItem(
+                        title: "Sound",
+                        description: "Choose a notification sound.",
+                        icon: "music.note"
+                    ) {
+                        Picker("", selection: reminderSoundEffectBinding) {
+                            ForEach(SoundManager.SoundEffect.allCases, id: \.rawValue) { sound in
+                                Text(sound.displayName).tag(sound.rawValue)
+                            }
+                        }
+                        .frame(width: 150)
+                        .labelsHidden()
+                    }
+
+                    SettingItem(
+                        title: "Volume",
+                        description: "Adjust sound effect volume.",
+                        icon: "speaker.wave.1"
+                    ) {
+                        HStack(spacing: 8) {
+                            Slider(value: soundEffectsVolumeBinding, in: 0.0 ... 1.0, step: 0.1)
+                                .frame(width: 150)
+
+                            UIButton(
+                                action: {
+                                    if let sound = SoundManager.SoundEffect(rawValue: reminderSoundEffect) {
+                                        SoundManager.shared.playSound(sound)
+                                    }
+                                },
+                                label: "Test",
+                                width: 60
+                            )
                         }
                     }
-                    .frame(width: 150)
-                    .labelsHidden()
                 }
 
                 SettingItem(
-                    title: "Volume",
-                    description: "Adjust sound effect volume.",
-                    icon: "speaker.wave.1"
+                    title: "Disable During Presentations",
+                    description: "Automatically pause reminders during screen sharing or presentations.",
+                    icon: "rectangle.on.rectangle"
                 ) {
-                    HStack(spacing: 8) {
-                        Slider(value: soundEffectsVolumeBinding, in: 0.0 ... 1.0, step: 0.1)
-                            .frame(width: 150)
+                    Toggle("", isOn: disableDuringPresentationBinding)
+                        .toggleStyle(.switch)
+                }
 
-                        UIButton(
-                            action: {
-                                if let sound = SoundManager.SoundEffect(rawValue: reminderSoundEffect) {
-                                    SoundManager.shared.playSound(sound)
-                                }
-                            },
-                            label: "Test",
-                            width: 60
-                        )
+                InfoBox {
+                    HStack {
+                        Image(systemName: "info.circle.fill")
+                        Text("The skip button is randomly placed to prevent developing muscle memory.")
+                        Spacer()
+                    }
+                }
+
+                InfoBox {
+                    HStack {
+                        Image(systemName: "info.circle.fill")
+                        Text("Questions/bugs? Email me at enochlauenoch@gmail.com")
+                            .foregroundStyle(.secondary)
+                        Spacer()
                     }
                 }
             }
-
-            SettingItem(
-                title: "Disable During Presentations",
-                description: "Automatically pause reminders during screen sharing or presentations.",
-                icon: "rectangle.on.rectangle"
-            ) {
-                Toggle("", isOn: disableDuringPresentationBinding)
-                    .toggleStyle(.switch)
-            }
-
-            InfoBox {
-                HStack {
-                    Image(systemName: "info.circle.fill")
-                    Text("The skip button is randomly placed to prevent developing muscle memory.")
-                    Spacer()
-                }
-            }
-
-            Spacer()
-            InfoBox {
-                HStack {
-                    Image(systemName: "info.circle.fill")
-                    Text("Questions/bugs? Email me at enochlauenoch@gmail.com")
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                }
-            }
+            .padding()
         }
     }
 

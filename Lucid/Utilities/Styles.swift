@@ -35,7 +35,7 @@ extension Color {
 
 enum Style {
     enum Colors {
-        static let accent: Color = .accentColor
+        static let accent: Color = .blue
         static let nightTime: Color = .blue
         static let morningTime: Color = .orange
         static let barFill: Gradient = .init(colors: [

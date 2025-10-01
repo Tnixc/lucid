@@ -92,258 +92,259 @@ struct MiniOverlaySettingsTab: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Style.Layout.padding) {
-            Text("Mini Overlay Reminders").font(.title).padding()
+        ScrollView {
+            VStack(alignment: .leading, spacing: Style.Layout.padding) {
+                Text("Mini Overlay Reminders").font(.title).padding()
 
-            SettingItem(
-                title: "Enable Mini Overlays",
-                description: "Show brief reminder messages at regular intervals.",
-                icon: "sparkles"
-            ) {
-                Toggle("", isOn: enabledBinding)
-                    .toggleStyle(.switch)
-            }
-
-            if enabled {
                 SettingItem(
-                    title: "Reminder Text",
-                    description: "The message displayed in the mini overlay.",
-                    icon: "text.bubble"
+                    title: "Enable Mini Overlays",
+                    description: "Show brief reminder messages at regular intervals.",
+                    icon: "sparkles"
                 ) {
-                    UITextField(text: textBinding, width: 200)
+                    Toggle("", isOn: enabledBinding)
+                        .toggleStyle(.switch)
                 }
 
-                SettingItem(
-                    title: "Icon",
-                    description: "Symbol displayed alongside the text.",
-                    icon: icon
-                ) {
-                    HStack(spacing: 8) {
-                        Image(systemName: icon)
-                            .font(.system(size: 20))
-                            .frame(width: 32, height: 32)
-                            .foregroundColor(.accentColor)
+                if enabled {
+                    SettingItem(
+                        title: "Reminder Text",
+                        description: "The message displayed in the mini overlay.",
+                        icon: "text.bubble"
+                    ) {
+                        UITextField(text: textBinding, width: 200)
+                    }
 
+                    SettingItem(
+                        title: "Icon",
+                        description: "Symbol displayed alongside the text.",
+                        icon: icon
+                    ) {
+                        HStack(spacing: 8) {
+                            Image(systemName: icon)
+                                .font(.system(size: 20))
+                                .frame(width: 32, height: 32)
+                                .foregroundColor(.accentColor)
+
+                            UIButton(
+                                action: { showingIconPicker.toggle() },
+                                label: "Choose Icon",
+                                width: 120
+                            )
+                        }
+                    }
+
+                    if showingIconPicker {
+                        SettingItemGroup {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Choose an Icon")
+                                    .font(.headline)
+
+                                LazyVGrid(columns: [
+                                    GridItem(.adaptive(minimum: 44), spacing: 8),
+                                ], spacing: 8) {
+                                    ForEach(iconOptions, id: \.self) { iconOption in
+                                        Button(action: {
+                                            icon = iconOption
+                                            defaults.set(iconOption, forKey: "miniOverlayIcon")
+                                            showingIconPicker = false
+                                        }) {
+                                            ZStack {
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .fill(icon == iconOption ? Color.accentColor.opacity(0.2) : Color.clear)
+                                                    .frame(width: 44, height: 44)
+
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .stroke(
+                                                        icon == iconOption ? Color.accentColor : Color.secondary.opacity(0.3),
+                                                        lineWidth: icon == iconOption ? 2 : 1
+                                                    )
+                                                    .frame(width: 44, height: 44)
+
+                                                Image(systemName: iconOption)
+                                                    .font(.system(size: 20))
+                                                    .foregroundColor(icon == iconOption ? .accentColor : .primary)
+                                            }
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    SettingItem(
+                        title: "Animation Duration (seconds)",
+                        description: "How long the entire animation takes to complete.",
+                        icon: "timer"
+                    ) {
+                        HStack(spacing: 8) {
+                            Slider(
+                                value: durationBinding,
+                                in: 2.0 ... 6.0,
+                                step: 0.5
+                            )
+                            .frame(width: 120)
+
+                            Text(String(format: "%.1fs", duration))
+                                .font(.system(.body, design: .monospaced))
+                                .frame(width: 45, alignment: .trailing)
+                        }
+                    }
+
+                    SettingItem(
+                        title: "Display Duration (seconds)",
+                        description: "How long the message stays visible in full.",
+                        icon: "hourglass"
+                    ) {
+                        HStack(spacing: 8) {
+                            Slider(
+                                value: holdDurationBinding,
+                                in: 1.0 ... 30.0,
+                                step: 1
+                            )
+                            .frame(width: 240)
+
+                            Text(String(format: "%.1fs", holdDuration))
+                                .font(.system(.body, design: .monospaced))
+                                .frame(width: 45, alignment: .trailing)
+                        }
+                    }
+
+                    SettingItem(
+                        title: "Frequency (minutes)",
+                        description: "Time between mini overlay reminders.",
+                        icon: "clock"
+                    ) {
+                        UINumberField(value: intervalBinding, width: 60)
+                    }
+
+                    SettingItem(
+                        title: "Use Custom Colors",
+                        description: "Override the system accent color with custom colors.",
+                        icon: "paintpalette"
+                    ) {
+                        Toggle("", isOn: useCustomColorsBinding)
+                            .toggleStyle(.switch)
+                    }
+
+                    if useCustomColors {
+                        SettingItem(
+                            title: "Background Color",
+                            description: "Color of the mini overlay background.",
+                            icon: "circle.fill"
+                        ) {
+                            ColorPicker("", selection: backgroundColorBinding, supportsOpacity: false)
+                                .labelsHidden()
+                        }
+
+                        SettingItem(
+                            title: "Foreground Color",
+                            description: "Color of the text and icon.",
+                            icon: "textformat"
+                        ) {
+                            ColorPicker("", selection: foregroundColorBinding, supportsOpacity: false)
+                                .labelsHidden()
+                        }
+                    }
+
+                    SettingItem(
+                        title: "Vertical Offset (pixels)",
+                        description: "Distance from the bottom of the screen.",
+                        icon: "arrow.up.and.down"
+                    ) {
+                        UINumberField(value: verticalOffsetBinding, width: 60)
+                    }
+
+                    SettingItem(
+                        title: "Preview",
+                        description: "Show a preview of the mini overlay reminder.",
+                        icon: "eye"
+                    ) {
                         UIButton(
-                            action: { showingIconPicker.toggle() },
-                            label: "Choose Icon",
+                            action: {
+                                let bgColor = useCustomColors ? Color(backgroundColor) : nil
+                                let fgColor = useCustomColors ? Color(foregroundColor) : nil
+                                Notifier.shared.showMiniOverlay(
+                                    text: text,
+                                    icon: icon,
+                                    duration: duration,
+                                    holdDuration: holdDuration,
+                                    backgroundColor: bgColor,
+                                    foregroundColor: fgColor,
+                                    verticalOffset: CGFloat(verticalOffset),
+                                    isPreview: true
+                                )
+                            },
+                            label: "Preview",
                             width: 120
                         )
                     }
-                }
 
-                if showingIconPicker {
+                    // Preset suggestions
                     SettingItemGroup {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Choose an Icon")
-                                .font(.headline)
+                            HStack {
+                                Image(systemName: "lightbulb.fill")
+                                    .foregroundColor(.accentColor)
+                                Text("Preset Messages")
+                                    .font(.headline)
+                            }
+
+                            Text("Quick suggestions for common wellness reminders:")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
 
                             LazyVGrid(columns: [
-                                GridItem(.adaptive(minimum: 44), spacing: 8),
+                                GridItem(.flexible()),
+                                GridItem(.flexible()),
                             ], spacing: 8) {
-                                ForEach(iconOptions, id: \.self) { iconOption in
-                                    Button(action: {
-                                        icon = iconOption
-                                        defaults.set(iconOption, forKey: "miniOverlayIcon")
-                                        showingIconPicker = false
-                                    }) {
-                                        ZStack {
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .fill(icon == iconOption ? Color.accentColor.opacity(0.2) : Color.clear)
-                                                .frame(width: 44, height: 44)
+                                PresetButton(title: "Posture check", icon: "figure.stand") {
+                                    text = "Posture check"
+                                    icon = "figure.stand"
+                                    defaults.set("Posture check", forKey: "miniOverlayText")
+                                    defaults.set("figure.stand", forKey: "miniOverlayIcon")
+                                }
 
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .stroke(
-                                                    icon == iconOption ? Color.accentColor : Color.secondary.opacity(0.3),
-                                                    lineWidth: icon == iconOption ? 2 : 1
-                                                )
-                                                .frame(width: 44, height: 44)
+                                PresetButton(title: "Stay hydrated", icon: "drop.fill") {
+                                    text = "Stay hydrated"
+                                    icon = "drop.fill"
+                                    defaults.set("Stay hydrated", forKey: "miniOverlayText")
+                                    defaults.set("drop.fill", forKey: "miniOverlayIcon")
+                                }
 
-                                            Image(systemName: iconOption)
-                                                .font(.system(size: 20))
-                                                .foregroundColor(icon == iconOption ? .accentColor : .primary)
-                                        }
-                                    }
-                                    .buttonStyle(.plain)
+                                PresetButton(title: "Blink more", icon: "eye.fill") {
+                                    text = "Blink more"
+                                    icon = "eye.fill"
+                                    defaults.set("Blink more", forKey: "miniOverlayText")
+                                    defaults.set("eye.fill", forKey: "miniOverlayIcon")
+                                }
+
+                                PresetButton(title: "Stretch time", icon: "figure.walk") {
+                                    text = "Stretch time"
+                                    icon = "figure.walk"
+                                    defaults.set("Stretch time", forKey: "miniOverlayText")
+                                    defaults.set("figure.walk", forKey: "miniOverlayIcon")
+                                }
+
+                                PresetButton(title: "Deep breath", icon: "lungs.fill") {
+                                    text = "Deep breath"
+                                    icon = "lungs.fill"
+                                    defaults.set("Deep breath", forKey: "miniOverlayText")
+                                    defaults.set("lungs.fill", forKey: "miniOverlayIcon")
+                                }
+
+                                PresetButton(title: "Look away", icon: "sparkles") {
+                                    text = "Look away"
+                                    icon = "sparkles"
+                                    defaults.set("Look away", forKey: "miniOverlayText")
+                                    defaults.set("sparkles", forKey: "miniOverlayIcon")
                                 }
                             }
                         }
                     }
                 }
-
-                SettingItem(
-                    title: "Animation Duration (seconds)",
-                    description: "How long the entire animation takes to complete.",
-                    icon: "timer"
-                ) {
-                    HStack(spacing: 8) {
-                        Slider(
-                            value: durationBinding,
-                            in: 2.0 ... 6.0,
-                            step: 0.5
-                        )
-                        .frame(width: 120)
-
-                        Text(String(format: "%.1fs", duration))
-                            .font(.system(.body, design: .monospaced))
-                            .frame(width: 45, alignment: .trailing)
-                    }
-                }
-
-                SettingItem(
-                    title: "Display Duration (seconds)",
-                    description: "How long the message stays visible in full.",
-                    icon: "hourglass"
-                ) {
-                    HStack(spacing: 8) {
-                        Slider(
-                            value: holdDurationBinding,
-                            in: 1.0 ... 30.0,
-                            step: 1
-                        )
-                        .frame(width: 240)
-
-                        Text(String(format: "%.1fs", holdDuration))
-                            .font(.system(.body, design: .monospaced))
-                            .frame(width: 45, alignment: .trailing)
-                    }
-                }
-
-                SettingItem(
-                    title: "Frequency (minutes)",
-                    description: "Time between mini overlay reminders.",
-                    icon: "clock"
-                ) {
-                    UINumberField(value: intervalBinding, width: 60)
-                }
-
-                SettingItem(
-                    title: "Use Custom Colors",
-                    description: "Override the system accent color with custom colors.",
-                    icon: "paintpalette"
-                ) {
-                    Toggle("", isOn: useCustomColorsBinding)
-                        .toggleStyle(.switch)
-                }
-
-                if useCustomColors {
-                    SettingItem(
-                        title: "Background Color",
-                        description: "Color of the mini overlay background.",
-                        icon: "circle.fill"
-                    ) {
-                        ColorPicker("", selection: backgroundColorBinding, supportsOpacity: false)
-                            .labelsHidden()
-                    }
-
-                    SettingItem(
-                        title: "Foreground Color",
-                        description: "Color of the text and icon.",
-                        icon: "textformat"
-                    ) {
-                        ColorPicker("", selection: foregroundColorBinding, supportsOpacity: false)
-                            .labelsHidden()
-                    }
-                }
-
-                SettingItem(
-                    title: "Vertical Offset (pixels)",
-                    description: "Distance from the bottom of the screen.",
-                    icon: "arrow.up.and.down"
-                ) {
-                    UINumberField(value: verticalOffsetBinding, width: 60)
-                }
-
-                SettingItem(
-                    title: "Preview",
-                    description: "Show a preview of the mini overlay reminder.",
-                    icon: "eye"
-                ) {
-                    UIButton(
-                        action: {
-                            let bgColor = useCustomColors ? Color(backgroundColor) : nil
-                            let fgColor = useCustomColors ? Color(foregroundColor) : nil
-                            Notifier.shared.showMiniOverlay(
-                                text: text,
-                                icon: icon,
-                                duration: duration,
-                                holdDuration: holdDuration,
-                                backgroundColor: bgColor,
-                                foregroundColor: fgColor,
-                                verticalOffset: CGFloat(verticalOffset),
-                                isPreview: true
-                            )
-                        },
-                        label: "Preview",
-                        width: 120
-                    )
-                }
-
-                // Preset suggestions
-                SettingItemGroup {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Image(systemName: "lightbulb.fill")
-                                .foregroundColor(.accentColor)
-                            Text("Preset Messages")
-                                .font(.headline)
-                        }
-
-                        Text("Quick suggestions for common wellness reminders:")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-
-                        LazyVGrid(columns: [
-                            GridItem(.flexible()),
-                            GridItem(.flexible()),
-                        ], spacing: 8) {
-                            PresetButton(title: "Posture check", icon: "figure.stand") {
-                                text = "Posture check"
-                                icon = "figure.stand"
-                                defaults.set("Posture check", forKey: "miniOverlayText")
-                                defaults.set("figure.stand", forKey: "miniOverlayIcon")
-                            }
-
-                            PresetButton(title: "Stay hydrated", icon: "drop.fill") {
-                                text = "Stay hydrated"
-                                icon = "drop.fill"
-                                defaults.set("Stay hydrated", forKey: "miniOverlayText")
-                                defaults.set("drop.fill", forKey: "miniOverlayIcon")
-                            }
-
-                            PresetButton(title: "Blink more", icon: "eye.fill") {
-                                text = "Blink more"
-                                icon = "eye.fill"
-                                defaults.set("Blink more", forKey: "miniOverlayText")
-                                defaults.set("eye.fill", forKey: "miniOverlayIcon")
-                            }
-
-                            PresetButton(title: "Stretch time", icon: "figure.walk") {
-                                text = "Stretch time"
-                                icon = "figure.walk"
-                                defaults.set("Stretch time", forKey: "miniOverlayText")
-                                defaults.set("figure.walk", forKey: "miniOverlayIcon")
-                            }
-
-                            PresetButton(title: "Deep breath", icon: "lungs.fill") {
-                                text = "Deep breath"
-                                icon = "lungs.fill"
-                                defaults.set("Deep breath", forKey: "miniOverlayText")
-                                defaults.set("lungs.fill", forKey: "miniOverlayIcon")
-                            }
-
-                            PresetButton(title: "Look away", icon: "sparkles") {
-                                text = "Look away"
-                                icon = "sparkles"
-                                defaults.set("Look away", forKey: "miniOverlayText")
-                                defaults.set("sparkles", forKey: "miniOverlayIcon")
-                            }
-                        }
-                    }
-                }
             }
-
-            Spacer()
+            .padding()
         }
     }
 

@@ -35,59 +35,60 @@ struct EyeStrainSettingsTab: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Style.Layout.padding) {
-            Text("Eye Strain Reminders").font(.title).padding()
+        ScrollView {
+            VStack(alignment: .leading, spacing: Style.Layout.padding) {
+                Text("Eye Strain Reminders").font(.title).padding()
 
-            SettingItem(
-                title: "Enable Eye Strain Reminders",
-                description: "Show reminders to take breaks and rest your eyes.",
-                icon: "eye"
-            ) {
-                Toggle("", isOn: enabledBinding)
-                    .toggleStyle(.switch)
+                SettingItem(
+                    title: "Enable Eye Strain Reminders",
+                    description: "Show reminders to take breaks and rest your eyes.",
+                    icon: "eye"
+                ) {
+                    Toggle("", isOn: enabledBinding)
+                        .toggleStyle(.switch)
+                }
+
+                SettingItem(
+                    title: "Reminder Frequency (minutes)",
+                    description: "Time between eye strain reminders.",
+                    icon: "clock"
+                ) {
+                    UINumberField(value: intervalBinding, width: 60)
+                }
+
+                SettingItem(
+                    title: "Reminder Title",
+                    description: "Title displayed on the reminder overlay.",
+                    icon: "text.bubble"
+                ) {
+                    UITextField(text: titleBinding)
+                }
+
+                SettingItem(
+                    title: "Reminder Message",
+                    description: "Message displayed on the reminder overlay.",
+                    icon: "text.quote"
+                ) {
+                    UITextField(text: messageBinding)
+                }
+
+                SettingItem(
+                    title: "Dismiss After (seconds)",
+                    description: "Time before the overlay auto-dismisses.",
+                    icon: "clock"
+                ) {
+                    UINumberField(value: dismissAfterBinding, width: 60)
+                }
+
+                SettingItem(
+                    title: "Preview",
+                    description: "Show a preview of the eye strain reminder overlay.",
+                    icon: "eye"
+                ) {
+                    UIButton(action: { Notifier.shared.showEyeStrainReminder(isPreview: true) }, label: "Preview", width: 120)
+                }
             }
-
-            SettingItem(
-                title: "Reminder Frequency (minutes)",
-                description: "Time between eye strain reminders.",
-                icon: "clock"
-            ) {
-                UINumberField(value: intervalBinding, width: 60)
-            }
-
-            SettingItem(
-                title: "Reminder Title",
-                description: "Title displayed on the reminder overlay.",
-                icon: "text.bubble"
-            ) {
-                UITextField(text: titleBinding)
-            }
-
-            SettingItem(
-                title: "Reminder Message",
-                description: "Message displayed on the reminder overlay.",
-                icon: "text.quote"
-            ) {
-                UITextField(text: messageBinding)
-            }
-
-            SettingItem(
-                title: "Dismiss After (seconds)",
-                description: "Time before the overlay auto-dismisses.",
-                icon: "clock"
-            ) {
-                UINumberField(value: dismissAfterBinding, width: 60)
-            }
-
-            SettingItem(
-                title: "Preview",
-                description: "Show a preview of the eye strain reminder overlay.",
-                icon: "eye"
-            ) {
-                UIButton(action: { Notifier.shared.showEyeStrainReminder(isPreview: true) }, label: "Preview", width: 120)
-            }
-
-            Spacer()
+            .padding()
         }
     }
 

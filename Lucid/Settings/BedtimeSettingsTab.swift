@@ -70,133 +70,134 @@ struct BedtimeSettingsTab: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Style.Layout.padding) {
-            Text("Bedtime Reminders").font(.title).padding()
-
-            SettingItem(
-                title: "Enable Bedtime Reminders",
-                description: "Show reminders during bedtime hours.",
-                icon: "moon"
-            ) {
-                Toggle("", isOn: enabledBinding)
-                    .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
-                    .scaleEffect(0.9, anchor: .trailing)
-            }
-
+        ScrollView {
             VStack(alignment: .leading, spacing: Style.Layout.padding) {
-                HStack {
-                    Image(systemName: "clock")
-                        .renderingMode(.template)
-                        .font(.title3)
-                        .frame(width: Style.Icon.size, height: Style.Icon.size)
-                    VStack(alignment: .leading) {
-                        Text("Bedtime Hours")
-                        Text("Set when you want bedtime reminders to be active.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                Text("Bedtime Reminders").font(.title).padding()
+
+                SettingItem(
+                    title: "Enable Bedtime Reminders",
+                    description: "Show reminders during bedtime hours.",
+                    icon: "moon"
+                ) {
+                    Toggle("", isOn: enabledBinding)
+                        .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
+                        .scaleEffect(0.9, anchor: .trailing)
+                }
+
+                VStack(alignment: .leading, spacing: Style.Layout.padding) {
+                    HStack {
+                        Image(systemName: "clock")
+                            .renderingMode(.template)
+                            .font(.title3)
+                            .frame(width: Style.Icon.size, height: Style.Icon.size)
+                        VStack(alignment: .leading) {
+                            Text("Bedtime Hours")
+                            Text("Set when you want bedtime reminders to be active.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
+                    Spacer().frame(height: 10.0)
+
+                    TimelineEditor(
+                        startHour: startHourBinding,
+                        startMinute: startMinuteBinding,
+                        endHour: endHourBinding,
+                        endMinute: endMinuteBinding
+                    )
                 }
-                Spacer().frame(height: 10.0)
-
-                TimelineEditor(
-                    startHour: startHourBinding,
-                    startMinute: startMinuteBinding,
-                    endHour: endHourBinding,
-                    endMinute: endMinuteBinding
+                .padding(Style.Layout.padding)
+                .background(
+                    ZStack {
+                        RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
+                            .fill(Style.Settings.itembg)
+                        RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
+                            .stroke(
+                                Style.Settings.itemBorder,
+                                lineWidth: Style.Layout.borderWidth
+                            )
+                    }
                 )
-            }
-            .padding(Style.Layout.padding)
-            .background(
-                ZStack {
-                    RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
-                        .fill(Style.Settings.itembg)
-                    RoundedRectangle(cornerRadius: Style.Layout.cornerRadius + 2)
-                        .stroke(
-                            Style.Settings.itemBorder,
-                            lineWidth: Style.Layout.borderWidth
-                        )
+
+                SettingItem(
+                    title: "Reminder Title",
+                    description: "Title displayed on the reminder overlay.",
+                    icon: "text.bubble"
+                ) {
+                    UITextField(text: titleBinding)
                 }
-            )
 
-            SettingItem(
-                title: "Reminder Title",
-                description: "Title displayed on the reminder overlay.",
-                icon: "text.bubble"
-            ) {
-                UITextField(text: titleBinding)
+                SettingItem(
+                    title: "Reminder Message",
+                    description: "Message displayed on the reminder overlay.",
+                    icon: "text.quote"
+                ) {
+                    UITextField(text: messageBinding)
+                }
+
+                SettingItem(
+                    title: "Auto-dismiss Overlay",
+                    description: "Automatically dismiss the overlay after a set time.",
+                    icon: "xmark.circle"
+                ) {
+                    Toggle("", isOn: autoDismissBinding)
+                        .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
+                        .scaleEffect(0.9, anchor: .trailing)
+                }
+
+                SettingItem(
+                    title: "Dismiss After (seconds)",
+                    description: "Time before the overlay auto-dismisses.",
+                    icon: "clock"
+                ) {
+                    UINumberField(value: dismissAfterBinding, width: 60)
+                }
+                .opacity(autoDismiss ? 1.0 : 0.5)
+                .disabled(!autoDismiss)
+
+                SettingItem(
+                    title: "Repeat Reminders",
+                    description: "Show reminders repeatedly during bedtime hours.",
+                    icon: "repeat"
+                ) {
+                    Toggle("", isOn: repeatRemindersBinding)
+                        .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
+                        .scaleEffect(0.9, anchor: .trailing)
+                }
+
+                SettingItem(
+                    title: "Repeat Interval (minutes)",
+                    description: "Time between repeated reminders.",
+                    icon: "timer"
+                ) {
+                    UINumberField(value: repeatIntervalBinding, width: 60)
+                }
+                .opacity(repeatReminders ? 1.0 : 0.5)
+                .disabled(!repeatReminders)
+
+                SettingItem(
+                    title: "Persistent Mode",
+                    description: "Continuously check every 2 seconds and show overlay if past bedtime with no active overlay.",
+                    icon: "arrow.clockwise"
+                ) {
+                    Toggle("", isOn: persistentBinding)
+                        .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
+                        .scaleEffect(0.9, anchor: .trailing)
+                }
+
+                SettingItem(
+                    title: "Preview",
+                    description: "Show a preview of the bedtime reminder overlay.",
+                    icon: "moon"
+                ) {
+                    UIButton(
+                        action: { Notifier.shared.showBedtimeReminder(isPreview: true) },
+                        label: "Preview",
+                        width: 120
+                    )
+                }
             }
-
-            SettingItem(
-                title: "Reminder Message",
-                description: "Message displayed on the reminder overlay.",
-                icon: "text.quote"
-            ) {
-                UITextField(text: messageBinding)
-            }
-
-            SettingItem(
-                title: "Auto-dismiss Overlay",
-                description: "Automatically dismiss the overlay after a set time.",
-                icon: "xmark.circle"
-            ) {
-                Toggle("", isOn: autoDismissBinding)
-                    .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
-                    .scaleEffect(0.9, anchor: .trailing)
-            }
-
-            SettingItem(
-                title: "Dismiss After (seconds)",
-                description: "Time before the overlay auto-dismisses.",
-                icon: "clock"
-            ) {
-                UINumberField(value: dismissAfterBinding, width: 60)
-            }
-            .opacity(autoDismiss ? 1.0 : 0.5)
-            .disabled(!autoDismiss)
-
-            SettingItem(
-                title: "Repeat Reminders",
-                description: "Show reminders repeatedly during bedtime hours.",
-                icon: "repeat"
-            ) {
-                Toggle("", isOn: repeatRemindersBinding)
-                    .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
-                    .scaleEffect(0.9, anchor: .trailing)
-            }
-
-            SettingItem(
-                title: "Repeat Interval (minutes)",
-                description: "Time between repeated reminders.",
-                icon: "timer"
-            ) {
-                UINumberField(value: repeatIntervalBinding, width: 60)
-            }
-            .opacity(repeatReminders ? 1.0 : 0.5)
-            .disabled(!repeatReminders)
-
-            SettingItem(
-                title: "Persistent Mode",
-                description: "Continuously check every 2 seconds and show overlay if past bedtime with no active overlay.",
-                icon: "arrow.clockwise"
-            ) {
-                Toggle("", isOn: persistentBinding)
-                    .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
-                    .scaleEffect(0.9, anchor: .trailing)
-            }
-
-            SettingItem(
-                title: "Preview",
-                description: "Show a preview of the bedtime reminder overlay.",
-                icon: "moon"
-            ) {
-                UIButton(
-                    action: { Notifier.shared.showBedtimeReminder(isPreview: true) },
-                    label: "Preview",
-                    width: 120
-                )
-            }
-
-            Spacer()
+            .padding()
         }
     }
 
