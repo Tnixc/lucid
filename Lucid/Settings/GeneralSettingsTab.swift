@@ -106,7 +106,8 @@ struct GeneralSettingsTab: View {
                             title: "Overlay Preview",
                             message:
                             "This is how your overlays will look with the current opacity setting.",
-                            dismissAfter: 5.0
+                            dismissAfter: 5.0,
+                            isPreview: true
                         )
                     },
                     label: "Preview",

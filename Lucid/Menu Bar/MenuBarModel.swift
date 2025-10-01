@@ -23,10 +23,12 @@ class MenuBarModel: ObservableObject {
     private func updateCountdown() {
         remainingTime -= 1
         if remainingTime <= 0 {
-            // Trigger eye strain reminder
-            notifier.showEyeStrainReminder()
+            // Trigger eye strain reminder if enabled
+            if defaults.bool(forKey: "eyeStrainEnabled") {
+                notifier.showEyeStrainReminder()
+            }
             let interval = defaults.integer(forKey: "eyeStrainInterval")
-            remainingTime = TimeInterval(interval > 0 ? interval : 20) * 60 // Reset
+            remainingTime = TimeInterval(interval) * 60 // Reset
         }
         let minutes = Int(remainingTime) / 60
         let seconds = Int(remainingTime) % 60
@@ -41,6 +43,6 @@ class MenuBarModel: ObservableObject {
 
     func resetTimer() {
         let interval = defaults.integer(forKey: "eyeStrainInterval")
-        remainingTime = TimeInterval(interval > 0 ? interval : 20) * 60
+        remainingTime = TimeInterval(interval) * 60
     }
 }

@@ -53,7 +53,6 @@ struct MiniOverlaySettingsTab: View {
         _interval = State(
             initialValue: defaults.integer(forKey: "miniOverlayInterval")
         )
-        if _interval.wrappedValue == 0 { _interval.wrappedValue = 30 }
 
         _icon = State(
             initialValue: defaults.string(forKey: "miniOverlayIcon") ?? "sparkles"
@@ -193,7 +192,7 @@ struct MiniOverlaySettingsTab: View {
                 ) {
                     UIButton(
                         action: {
-                            Notifier.shared.showMiniOverlay(text: text, icon: icon, duration: duration, holdDuration: holdDuration)
+                            Notifier.shared.showMiniOverlay(text: text, icon: icon, duration: duration, holdDuration: holdDuration, isPreview: true)
                         },
                         label: "Preview",
                         width: 120

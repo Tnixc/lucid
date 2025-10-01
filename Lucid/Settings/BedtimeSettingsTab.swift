@@ -13,6 +13,7 @@ struct BedtimeSettingsTab: View {
     @State private var repeatReminders: Bool
     @State private var repeatInterval: Int
     @State private var autoDismiss: Bool
+    @State private var persistent: Bool
 
     init() {
         let defaults = UserDefaults.standard
@@ -51,7 +52,6 @@ struct BedtimeSettingsTab: View {
         _dismissAfter = State(
             initialValue: defaults.integer(forKey: "bedtimeDismissAfter")
         )
-        if _dismissAfter.wrappedValue == 0 { _dismissAfter.wrappedValue = 30 }
 
         _repeatReminders = State(
             initialValue: defaults.bool(forKey: "bedtimeRepeatReminders")
@@ -59,10 +59,13 @@ struct BedtimeSettingsTab: View {
         _repeatInterval = State(
             initialValue: defaults.integer(forKey: "bedtimeRepeatInterval")
         )
-        if _repeatInterval.wrappedValue == 0 { _repeatInterval.wrappedValue = 15 }
 
         _autoDismiss = State(
             initialValue: defaults.object(forKey: "bedtimeAutoDismiss") as? Bool ?? true
+        )
+
+        _persistent = State(
+            initialValue: defaults.bool(forKey: "bedtimePersistent")
         )
     }
 
@@ -172,12 +175,22 @@ struct BedtimeSettingsTab: View {
             .disabled(!repeatReminders)
 
             SettingItem(
+                title: "Persistent Mode",
+                description: "Continuously check every 2 seconds and show overlay if past bedtime with no active overlay.",
+                icon: "arrow.clockwise"
+            ) {
+                Toggle("", isOn: persistentBinding)
+                    .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
+                    .scaleEffect(0.9, anchor: .trailing)
+            }
+
+            SettingItem(
                 title: "Preview",
                 description: "Show a preview of the bedtime reminder overlay.",
                 icon: "moon"
             ) {
                 UIButton(
-                    action: { Notifier.shared.showBedtimeReminder() },
+                    action: { Notifier.shared.showBedtimeReminder(isPreview: true) },
                     label: "Preview",
                     width: 120
                 )
@@ -311,6 +324,17 @@ struct BedtimeSettingsTab: View {
             set: {
                 self.autoDismiss = $0
                 UserDefaults.standard.set($0, forKey: "bedtimeAutoDismiss")
+            }
+        )
+    }
+
+    private var persistentBinding: Binding<Bool> {
+        Binding(
+            get: { self.persistent },
+            set: {
+                self.persistent = $0
+                UserDefaults.standard.set($0, forKey: "bedtimePersistent")
+                Notifier.shared.updateSettings()
             }
         )
     }

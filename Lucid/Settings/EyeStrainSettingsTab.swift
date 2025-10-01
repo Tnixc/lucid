@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 
 struct EyeStrainSettingsTab: View {
+    @State private var enabled: Bool
     @State private var interval: Int
     @State private var title: String
     @State private var message: String
@@ -9,22 +10,28 @@ struct EyeStrainSettingsTab: View {
 
     init() {
         let defaults = UserDefaults.standard
+
+        _enabled = State(
+            initialValue: defaults.bool(forKey: "eyeStrainEnabled")
+        )
+
         _interval = State(
             initialValue: defaults.integer(forKey: "eyeStrainInterval")
         )
-        if _interval.wrappedValue == 0 { _interval.wrappedValue = 20 }
+
         _title = State(
             initialValue: defaults.string(forKey: "eyeStrainTitle")
                 ?? "Eye Strain Break"
         )
+
         _message = State(
             initialValue: defaults.string(forKey: "eyeStrainMessage")
                 ?? "Look away from the screen and rest your eyes."
         )
+
         _dismissAfter = State(
             initialValue: defaults.integer(forKey: "eyeStrainDismissAfter")
         )
-        if _dismissAfter.wrappedValue == 0 { _dismissAfter.wrappedValue = 20 }
     }
 
     var body: some View {
@@ -32,9 +39,18 @@ struct EyeStrainSettingsTab: View {
             Text("Eye Strain Reminders").font(.title).padding()
 
             SettingItem(
-                title: "Interval (minutes)",
+                title: "Enable Eye Strain Reminders",
+                description: "Show reminders to take breaks and rest your eyes.",
+                icon: "eye"
+            ) {
+                Toggle("", isOn: enabledBinding)
+                    .toggleStyle(.switch)
+            }
+
+            SettingItem(
+                title: "Reminder Frequency (minutes)",
                 description: "Time between eye strain reminders.",
-                icon: "timer"
+                icon: "clock"
             ) {
                 UINumberField(value: intervalBinding, width: 60)
             }
@@ -68,11 +84,24 @@ struct EyeStrainSettingsTab: View {
                 description: "Show a preview of the eye strain reminder overlay.",
                 icon: "eye"
             ) {
-                UIButton(action: { Notifier.shared.showEyeStrainReminder() }, label: "Preview", width: 120)
+                UIButton(action: { Notifier.shared.showEyeStrainReminder(isPreview: true) }, label: "Preview", width: 120)
             }
 
             Spacer()
         }
+    }
+
+    private var enabledBinding: Binding<Bool> {
+        Binding(
+            get: { self.enabled },
+            set: {
+                self.enabled = $0
+                UserDefaults.standard.set($0, forKey: "eyeStrainEnabled")
+                if $0 {
+                    Notifier.shared.updateSettings()
+                }
+            }
+        )
     }
 
     private var intervalBinding: Binding<Int> {

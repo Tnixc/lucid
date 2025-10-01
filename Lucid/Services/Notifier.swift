@@ -19,16 +19,22 @@ class Notifier {
     private var clockOutUseOverlay: Bool?
     var overlayWindows: [NSWindow] = []
     var miniOverlayWindows: [NSWindow] = []
+    private var persistentBedtimeTimer: Timer?
 
     private init() {
         updateSettings()
         setupKeyboardShortcuts()
-        requestNotificationPermission()
+        setupPersistentBedtimeTimer()
     }
 
-    func showOverlay(title: String, message: String, dismissAfter: TimeInterval, autoDismiss: Bool = true) {
-        // Check if alerts are enabled
-        guard defaults.bool(forKey: "alertsEnabled") != false else {
+    func showOverlay(title: String, message: String, dismissAfter: TimeInterval, autoDismiss: Bool = true, isPreview: Bool = false) {
+        // Skip if settings window is open (unless this is a preview)
+        guard isPreview || !AppState.shared.isSettingsWindowOpen else {
+            return
+        }
+
+        // Check if alerts are enabled (skip check for previews)
+        guard isPreview || defaults.bool(forKey: "alertsEnabled") != false else {
             return
         }
 
@@ -65,9 +71,14 @@ class Notifier {
         }
     }
 
-    func showMiniOverlay(text: String, icon: String? = nil, duration: TimeInterval = 3.15, holdDuration: TimeInterval = 1.5) {
-        // Check if alerts are enabled
-        guard defaults.bool(forKey: "alertsEnabled") != false else {
+    func showMiniOverlay(text: String, icon: String? = nil, duration: TimeInterval = 3.15, holdDuration: TimeInterval = 1.5, isPreview: Bool = false) {
+        // Skip if settings window is open (unless this is a preview)
+        guard isPreview || !AppState.shared.isSettingsWindowOpen else {
+            return
+        }
+
+        // Check if alerts are enabled (skip check for previews)
+        guard isPreview || defaults.bool(forKey: "alertsEnabled") != false else {
             return
         }
 
@@ -96,29 +107,27 @@ class Notifier {
         }
     }
 
-    func showEyeStrainReminder() {
+    func showEyeStrainReminder(isPreview: Bool = false) {
         let title = defaults.string(forKey: "eyeStrainTitle") ?? "Eye Strain Break"
         let message =
             defaults.string(forKey: "eyeStrainMessage")
                 ?? "Look away from the screen and rest your eyes."
-        var dismissAfter = TimeInterval(
+        let dismissAfter = TimeInterval(
             defaults.integer(forKey: "eyeStrainDismissAfter")
         )
-        if dismissAfter == 0 { dismissAfter = 20 } // default 20 seconds
-        showOverlay(title: title, message: message, dismissAfter: dismissAfter)
+        showOverlay(title: title, message: message, dismissAfter: dismissAfter, isPreview: isPreview)
     }
 
-    func showBedtimeReminder() {
+    func showBedtimeReminder(isPreview: Bool = false) {
         let title = defaults.string(forKey: "bedtimeTitle") ?? "Bedtime Reminder"
         let message =
             defaults.string(forKey: "bedtimeMessage")
                 ?? "It's time to go to bed and get some rest."
-        var dismissAfter = TimeInterval(
+        let dismissAfter = TimeInterval(
             defaults.integer(forKey: "bedtimeDismissAfter")
         )
-        if dismissAfter == 0 { dismissAfter = 30 } // default 30 seconds
         let autoDismiss = defaults.object(forKey: "bedtimeAutoDismiss") as? Bool ?? true
-        showOverlay(title: title, message: message, dismissAfter: dismissAfter, autoDismiss: autoDismiss)
+        showOverlay(title: title, message: message, dismissAfter: dismissAfter, autoDismiss: autoDismiss, isPreview: isPreview)
     }
 
     private func setupKeyboardShortcuts() {
@@ -137,17 +146,97 @@ class Notifier {
         clockOutUseOverlay = defaults.object(forKey: "clockOutUseOverlay") as? Bool
         bedtimeStartTime = defaults.object(forKey: "bedtimeStartTime") as? Date
         bedtimeEndTime = defaults.object(forKey: "bedtimeEndTime") as? Date
+        setupPersistentBedtimeTimer()
+    }
+
+    private func setupPersistentBedtimeTimer() {
+        // Invalidate existing timer
+        persistentBedtimeTimer?.invalidate()
+        persistentBedtimeTimer = nil
+
+        // Only create timer if persistent mode is enabled
+        guard defaults.bool(forKey: "bedtimePersistent"),
+              defaults.bool(forKey: "bedtimeEnabled")
+        else {
+            return
+        }
+
+        // Create timer that fires every 2 seconds
+        persistentBedtimeTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
+            self?.checkPersistentBedtime()
+        }
+    }
+
+    private func checkPersistentBedtime() {
+        // Skip if settings window is open
+        guard !AppState.shared.isSettingsWindowOpen else {
+            return
+        }
+
+        guard defaults.bool(forKey: "bedtimePersistent"),
+              defaults.bool(forKey: "bedtimeEnabled"),
+              let bedtimeStartTime = bedtimeStartTime,
+              let bedtimeEndTime = bedtimeEndTime
+        else {
+            return
+        }
+
+        // Don't show if there's already an active overlay
+        guard overlayWindows.isEmpty else {
+            return
+        }
+
+        let now = Date()
+        let calendar = Calendar.current
+
+        let startComponents = calendar.dateComponents([.hour, .minute], from: bedtimeStartTime)
+        let endComponents = calendar.dateComponents([.hour, .minute], from: bedtimeEndTime)
+        let currentComponents = calendar.dateComponents([.hour, .minute], from: now)
+
+        guard let startHour = startComponents.hour,
+              let startMinute = startComponents.minute,
+              let endHour = endComponents.hour,
+              let endMinute = endComponents.minute,
+              let currentHour = currentComponents.hour,
+              let currentMinute = currentComponents.minute
+        else {
+            return
+        }
+
+        // Convert to minutes since midnight for easier comparison
+        let startMinutes = startHour * 60 + startMinute
+        let endMinutes = endHour * 60 + endMinute
+        let currentMinutes = currentHour * 60 + currentMinute
+
+        // Check if current time is within bedtime range
+        let currentlyInBedtime: Bool
+        if endMinutes < startMinutes {
+            // Range spans midnight (e.g., 22:00 to 6:00)
+            currentlyInBedtime = currentMinutes >= startMinutes || currentMinutes <= endMinutes
+        } else {
+            // Range within same day (e.g., 10:00 to 18:00)
+            currentlyInBedtime = currentMinutes >= startMinutes && currentMinutes <= endMinutes
+        }
+
+        // If we're past bedtime and no overlay is active, show it
+        if currentlyInBedtime {
+            showBedtimeReminder()
+        }
     }
 
     func checkMiniOverlayTime() {
+        // Skip if settings window is open
+        guard !AppState.shared.isSettingsWindowOpen else {
+            return
+        }
+
         guard defaults.bool(forKey: "miniOverlayEnabled") else {
             return
         }
 
         let now = Date()
         let intervalMinutes = defaults.integer(forKey: "miniOverlayInterval")
-        let interval = intervalMinutes > 0 ? intervalMinutes : 30 // default 30 minutes
-        let intervalSeconds = TimeInterval(interval * 60)
+        let intervalSeconds = TimeInterval(intervalMinutes * 60)
 
         if lastMiniOverlayTime == nil {
             // First time, show immediately
@@ -172,6 +261,11 @@ class Notifier {
     }
 
     func checkClockOutTime() {
+        // Skip if settings window is open
+        guard !AppState.shared.isSettingsWindowOpen else {
+            return
+        }
+
         guard defaults.bool(forKey: "clockOutEnabled"),
               let clockOutTime = clockOutTime
         else {
@@ -207,9 +301,7 @@ class Notifier {
         } else if let lastReminder = lastReminderTime,
                   defaults.bool(forKey: "clockOutReminderEnabled")
         {
-            let reminderInterval = TimeInterval(
-                defaults.integer(forKey: "clockOutReminderInterval") * 60
-            )
+            let reminderInterval = TimeInterval(defaults.integer(forKey: "clockOutReminderInterval") * 60)
             if now.timeIntervalSince(lastReminder) >= reminderInterval {
                 clockOutReminder()
                 lastReminderTime = now
@@ -274,8 +366,7 @@ class Notifier {
                 } else {
                     // Check if enough time has passed for a repeat reminder
                     let repeatInterval = TimeInterval(defaults.integer(forKey: "bedtimeRepeatInterval") * 60)
-                    let interval = repeatInterval > 0 ? repeatInterval : 15 * 60 // default 15 minutes
-                    if now.timeIntervalSince(lastBedtimeReminderTime!) >= interval {
+                    if now.timeIntervalSince(lastBedtimeReminderTime!) >= repeatInterval {
                         showBedtimeReminder()
                         lastBedtimeReminderTime = now
                     }
@@ -368,20 +459,6 @@ class Notifier {
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 print("Error sending notification: \(error.localizedDescription)")
-            }
-        }
-    }
-
-    private func requestNotificationPermission() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [
-            .alert, .sound, .badge,
-        ]) { granted, error in
-            if granted {
-                print("Notification permission granted")
-            } else if let error = error {
-                print(
-                    "Error requesting notification permission: \(error.localizedDescription)"
-                )
             }
         }
     }

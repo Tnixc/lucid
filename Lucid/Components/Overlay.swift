@@ -35,9 +35,8 @@ func generateOverlay(
         )
     )
 
-    contentView.frame = window.contentView!.bounds
     contentView.autoresizingMask = [.width, .height]
-    window.contentView?.addSubview(contentView)
+    window.contentView = contentView
 
     return window
 }

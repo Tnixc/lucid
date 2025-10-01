@@ -69,10 +69,9 @@ func generateMiniOverlay(
         )
     )
 
-    hostingView.frame = window.contentView!.bounds
     hostingView.autoresizingMask = [.width, .height]
     hostingView.parentWindow = window
-    window.contentView?.addSubview(hostingView)
+    window.contentView = hostingView
 
     return window
 }

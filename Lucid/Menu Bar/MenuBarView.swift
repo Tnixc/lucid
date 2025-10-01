@@ -64,7 +64,7 @@ struct MenuBarView: View {
 
                 ControlCenterToggle(
                     icon: alertsEnabled ? "bell.fill" : "bell.slash.fill",
-                    label: "Alerts",
+                    label: "All Alerts",
                     isOn: $alertsEnabled
                 )
             }
