@@ -71,6 +71,32 @@ struct OverlayView: View {
         }
     }
 
+    private var useCustomColors: Bool {
+        defaults.bool(forKey: "useCustomColors")
+    }
+
+    private var textColor: Color {
+        guard useCustomColors else { return Color.primary }
+
+        if let colorData = defaults.data(forKey: "overlayTextColor"),
+           let nsColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: colorData)
+        {
+            return Color(nsColor)
+        }
+        return Color.primary
+    }
+
+    private var backgroundColor: Color {
+        guard useCustomColors else { return Color.clear }
+
+        if let colorData = defaults.data(forKey: "overlayBackgroundColor"),
+           let nsColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: colorData)
+        {
+            return Color(nsColor)
+        }
+        return Color.clear
+    }
+
     init(
         title: String,
         message: String,
@@ -107,6 +133,10 @@ struct OverlayView: View {
                     blendingMode: .behindWindow
                 )
 
+                // Background tint overlay
+                backgroundColor
+                    .ignoresSafeArea()
+
                 VStack(spacing: 0) {
                     Spacer()
 
@@ -115,24 +145,26 @@ struct OverlayView: View {
                         Text("The time is " + currentTime)
                             .font(.title)
                             .fontWeight(.medium)
-                            .foregroundStyle(.secondary)
+                            .foregroundColor(textColor.opacity(0.7))
 
                         VStack(spacing: 20) {
                             Text(title)
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
+                                .foregroundColor(textColor)
 
                             Text(message)
                                 .font(.title2)
+                                .foregroundColor(textColor)
 
                             if autoDismiss {
                                 HStack(spacing: 0) {
                                     Text("Dismisses in ")
                                         .font(.title2)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundColor(textColor.opacity(0.7))
                                     Text(formatTime(remainingTime))
                                         .font(.title2)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundColor(textColor.opacity(0.7))
                                         .contentTransition(
                                             .numericText(countsDown: true)
                                         )

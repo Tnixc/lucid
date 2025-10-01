@@ -33,6 +33,9 @@ struct GeneralSettingsTab: View {
     @State private var reminderSoundEffect: String
     @State private var soundEffectsVolume: Double
     @State private var disableDuringPresentation: Bool
+    @State private var useCustomColors: Bool
+    @State private var overlayTextColor: Color
+    @State private var overlayBackgroundColor: Color
 
     init() {
         let defaults = UserDefaults.standard
@@ -62,6 +65,27 @@ struct GeneralSettingsTab: View {
         _disableDuringPresentation = State(
             initialValue: defaults.object(forKey: "disableDuringPresentation") as? Bool ?? true
         )
+
+        _useCustomColors = State(
+            initialValue: defaults.bool(forKey: "useCustomColors")
+        )
+
+        // Load custom colors
+        if let textColorData = defaults.data(forKey: "overlayTextColor"),
+           let textColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: textColorData)
+        {
+            _overlayTextColor = State(initialValue: Color(textColor))
+        } else {
+            _overlayTextColor = State(initialValue: Color.primary)
+        }
+
+        if let bgColorData = defaults.data(forKey: "overlayBackgroundColor"),
+           let bgColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: bgColorData)
+        {
+            _overlayBackgroundColor = State(initialValue: Color(bgColor))
+        } else {
+            _overlayBackgroundColor = State(initialValue: Color.clear)
+        }
     }
 
     var body: some View {
@@ -88,6 +112,9 @@ struct GeneralSettingsTab: View {
                     KeyboardShortcuts.Recorder(for: .dismissOverlay)
                 }
 
+                Divider()
+                    .padding(.vertical, 8)
+
                 SettingItem(
                     title: "Overlay Opacity",
                     description: "Material thickness for overlay background.",
@@ -104,6 +131,38 @@ struct GeneralSettingsTab: View {
                 .zIndex(100)
 
                 SettingItem(
+                    title: "Use Custom Colors",
+                    description: "Enable custom text and background colors for overlays.",
+                    icon: "paintbrush"
+                ) {
+                    Toggle("", isOn: useCustomColorsBinding)
+                        .toggleStyle(SwitchToggleStyle(tint: Style.Colors.accent))
+                        .scaleEffect(0.9, anchor: .trailing)
+                }
+
+                SettingItem(
+                    title: "Text Color",
+                    description: "Customize the text color in overlays.",
+                    icon: "textformat"
+                ) {
+                    ColorPicker("", selection: overlayTextColorBinding, supportsOpacity: false)
+                        .labelsHidden()
+                }
+                .opacity(useCustomColors ? 1.0 : 0.5)
+                .disabled(!useCustomColors)
+
+                SettingItem(
+                    title: "Background Tint",
+                    description: "Add a color tint to the overlay background.",
+                    icon: "paintpalette"
+                ) {
+                    ColorPicker("", selection: overlayBackgroundColorBinding, supportsOpacity: true)
+                        .labelsHidden()
+                }
+                .opacity(useCustomColors ? 1.0 : 0.5)
+                .disabled(!useCustomColors)
+
+                SettingItem(
                     title: "Click to Dismiss",
                     description:
                     "Allow clicking on the overlay to dismiss it. Not recommened.",
@@ -116,7 +175,7 @@ struct GeneralSettingsTab: View {
 
                 SettingItem(
                     title: "Preview",
-                    description: "Test the overlay with current opacity setting.",
+                    description: "Test the overlay with current settings.",
                     icon: "eye"
                 ) {
                     UIButton(
@@ -124,7 +183,7 @@ struct GeneralSettingsTab: View {
                             Notifier.shared.showOverlay(
                                 title: "Overlay Preview",
                                 message:
-                                "This is how your overlays will look with the current opacity setting.",
+                                "This is how your overlays will look with the current settings.",
                                 dismissAfter: 5.0,
                                 isPreview: true
                             )
@@ -133,6 +192,21 @@ struct GeneralSettingsTab: View {
                         width: 120
                     )
                 }
+
+                Divider()
+                    .padding(.vertical, 8)
+
+                SettingItem(
+                    title: "Disable During Presentations",
+                    description: "Automatically pause reminders during screen sharing or presentations.",
+                    icon: "rectangle.on.rectangle"
+                ) {
+                    Toggle("", isOn: disableDuringPresentationBinding)
+                        .toggleStyle(.switch)
+                }
+
+                Divider()
+                    .padding(.vertical, 8)
 
                 SettingItem(
                     title: "Sound Effects",
@@ -180,14 +254,8 @@ struct GeneralSettingsTab: View {
                     }
                 }
 
-                SettingItem(
-                    title: "Disable During Presentations",
-                    description: "Automatically pause reminders during screen sharing or presentations.",
-                    icon: "rectangle.on.rectangle"
-                ) {
-                    Toggle("", isOn: disableDuringPresentationBinding)
-                        .toggleStyle(.switch)
-                }
+                Divider()
+                    .padding(.vertical, 8)
 
                 InfoBox {
                     HStack {
@@ -280,6 +348,42 @@ struct GeneralSettingsTab: View {
             set: {
                 self.disableDuringPresentation = $0
                 UserDefaults.standard.set($0, forKey: "disableDuringPresentation")
+            }
+        )
+    }
+
+    private var useCustomColorsBinding: Binding<Bool> {
+        Binding(
+            get: { self.useCustomColors },
+            set: {
+                self.useCustomColors = $0
+                UserDefaults.standard.set($0, forKey: "useCustomColors")
+            }
+        )
+    }
+
+    private var overlayTextColorBinding: Binding<Color> {
+        Binding(
+            get: { self.overlayTextColor },
+            set: {
+                self.overlayTextColor = $0
+                let nsColor = NSColor($0)
+                if let colorData = try? NSKeyedArchiver.archivedData(withRootObject: nsColor, requiringSecureCoding: false) {
+                    UserDefaults.standard.set(colorData, forKey: "overlayTextColor")
+                }
+            }
+        )
+    }
+
+    private var overlayBackgroundColorBinding: Binding<Color> {
+        Binding(
+            get: { self.overlayBackgroundColor },
+            set: {
+                self.overlayBackgroundColor = $0
+                let nsColor = NSColor($0)
+                if let colorData = try? NSKeyedArchiver.archivedData(withRootObject: nsColor, requiringSecureCoding: false) {
+                    UserDefaults.standard.set(colorData, forKey: "overlayBackgroundColor")
+                }
             }
         )
     }

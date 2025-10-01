@@ -172,23 +172,15 @@ struct MiniOverlaySettingsTab: View {
                         }
                     }
 
-                    SettingItem(
-                        title: "Animation Duration (seconds)",
-                        description: "How long the entire animation takes to complete.",
-                        icon: "timer"
-                    ) {
-                        HStack(spacing: 8) {
-                            Slider(
-                                value: durationBinding,
-                                in: 2.0 ... 6.0,
-                                step: 0.5
-                            )
-                            .frame(width: 120)
+                    Divider()
+                        .padding(.vertical, 8)
 
-                            Text(String(format: "%.1fs", duration))
-                                .font(.system(.body, design: .monospaced))
-                                .frame(width: 45, alignment: .trailing)
-                        }
+                    SettingItem(
+                        title: "Frequency (minutes)",
+                        description: "Time between mini overlay reminders.",
+                        icon: "clock"
+                    ) {
+                        UINumberField(value: intervalBinding, width: 60)
                     }
 
                     SettingItem(
@@ -211,41 +203,57 @@ struct MiniOverlaySettingsTab: View {
                     }
 
                     SettingItem(
-                        title: "Frequency (minutes)",
-                        description: "Time between mini overlay reminders.",
-                        icon: "clock"
+                        title: "Animation Duration (seconds)",
+                        description: "How long the entire animation takes to complete.",
+                        icon: "timer"
                     ) {
-                        UINumberField(value: intervalBinding, width: 60)
+                        HStack(spacing: 8) {
+                            Slider(
+                                value: durationBinding,
+                                in: 2.0 ... 6.0,
+                                step: 0.5
+                            )
+                            .frame(width: 120)
+
+                            Text(String(format: "%.1fs", duration))
+                                .font(.system(.body, design: .monospaced))
+                                .frame(width: 45, alignment: .trailing)
+                        }
                     }
+
+                    Divider()
+                        .padding(.vertical, 8)
 
                     SettingItem(
                         title: "Use Custom Colors",
                         description: "Override the system accent color with custom colors.",
-                        icon: "paintpalette"
+                        icon: "paintbrush"
                     ) {
                         Toggle("", isOn: useCustomColorsBinding)
                             .toggleStyle(.switch)
                     }
 
-                    if useCustomColors {
-                        SettingItem(
-                            title: "Background Color",
-                            description: "Color of the mini overlay background.",
-                            icon: "circle.fill"
-                        ) {
-                            ColorPicker("", selection: backgroundColorBinding, supportsOpacity: false)
-                                .labelsHidden()
-                        }
-
-                        SettingItem(
-                            title: "Foreground Color",
-                            description: "Color of the text and icon.",
-                            icon: "textformat"
-                        ) {
-                            ColorPicker("", selection: foregroundColorBinding, supportsOpacity: false)
-                                .labelsHidden()
-                        }
+                    SettingItem(
+                        title: "Background Color",
+                        description: "Color of the mini overlay background.",
+                        icon: "circle.fill"
+                    ) {
+                        ColorPicker("", selection: backgroundColorBinding, supportsOpacity: false)
+                            .labelsHidden()
                     }
+                    .opacity(useCustomColors ? 1.0 : 0.5)
+                    .disabled(!useCustomColors)
+
+                    SettingItem(
+                        title: "Foreground Color",
+                        description: "Color of the text and icon.",
+                        icon: "textformat"
+                    ) {
+                        ColorPicker("", selection: foregroundColorBinding, supportsOpacity: false)
+                            .labelsHidden()
+                    }
+                    .opacity(useCustomColors ? 1.0 : 0.5)
+                    .disabled(!useCustomColors)
 
                     SettingItem(
                         title: "Vertical Offset (pixels)",
@@ -254,6 +262,9 @@ struct MiniOverlaySettingsTab: View {
                     ) {
                         UINumberField(value: verticalOffsetBinding, width: 60)
                     }
+
+                    Divider()
+                        .padding(.vertical, 8)
 
                     SettingItem(
                         title: "Preview",
@@ -279,6 +290,9 @@ struct MiniOverlaySettingsTab: View {
                             width: 120
                         )
                     }
+
+                    Divider()
+                        .padding(.vertical, 8)
 
                     // Preset suggestions
                     SettingItemGroup {
