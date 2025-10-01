@@ -140,7 +140,7 @@ Add audio feedback to your reminders for better awareness.
 
 ### Option 1: Download Pre-built Binary
 
-1. Download the latest release from the [Releases](../../releases) page
+1. Download the latest release from the releases page
 2. Move `Lucid.app` to your Applications folder
 3. Launch the app
 4. Grant necessary permissions when prompted
@@ -284,15 +284,9 @@ All settings are stored in `UserDefaults` with the following keys:
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
 ## Recent Updates
 
-### Version 1.1.0 (Latest)
+### Version "Working Hell yeah" (Latest)
 
 - ✅ **Presentation Mode Detection** - Auto-pause during screen sharing
 - ✅ **Sound Effects** - 10 customizable notification sounds
@@ -313,23 +307,19 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - [ ] Statistics tracking for reminder engagement
 - [ ] Multiple reminder profiles (work, home, weekend)
 - [ ] Pomodoro timer integration
-- [ ] Hydration reminders
 - [ ] Stretch routine reminders with guided exercises
 - [ ] Calendar integration for smart scheduling
 - [ ] Export/import settings
 - [ ] Custom sound upload
 - [ ] Activity detection improvements
 
-## License
-
-[Add your license here]
 
 ## Support
 
 For questions, issues, or feedback:
 
+- Open an issue.
 - Email: enochlauenoch@gmail.com
-- Issues: [GitHub Issues](../../issues)
 
 ## Acknowledgments
 
@@ -337,8 +327,3 @@ For questions, issues, or feedback:
 - Icons from [SF Symbols](https://developer.apple.com/sf-symbols/)
 - Dependencies: SettingsAccess, KeyboardShortcuts
 
----
-
-## 📖 Additional Documentation
-
-For detailed feature documentation, see [FEATURES.md](FEATURES.md)
