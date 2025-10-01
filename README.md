@@ -28,7 +28,9 @@ Periodic full-screen overlay reminders to give your eyes a rest using the 20-20-
 - **Enable toggle**: Turn eye strain reminders on/off
 - **Preview button**: Test reminders with current settings
 
-<img width="600" alt="image" src="https://github.com/user-attachments/assets/a2d0891b-9598-4d55-b88b-fce57cf9d174" />
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/b808580b-c13d-4526-8bd3-9e3c340ea79a" />
+
+
 
 ### ✨ Mini Overlay Reminders
 
@@ -50,7 +52,11 @@ Brief, non-intrusive animated reminders that appear at the bottom of your screen
   - Deep breath
   - Look away
 
-<img width="600" alt="image" src="https://github.com/user-attachments/assets/97620a27-a63e-4942-843b-bc162a04bfe7" />
+
+
+https://github.com/user-attachments/assets/88542cdf-c534-40a6-8461-5bb878fd7adb
+
+
 
 ### 🌙 Bedtime Reminders
 
@@ -63,7 +69,8 @@ Intelligent bedtime notifications to help maintain healthy sleep schedules.
 - **Custom messaging**: Personalize title and message for bedtime notifications
 - **Persistent mode**: Continuously check and show overlay if past bedtime (NEW)
 
-<img width="600" alt="image" src="https://github.com/user-attachments/assets/70699ef4-88ef-4ec3-a536-82cb0c136f89" />
+<img width="946" height="973" alt="image" src="https://github.com/user-attachments/assets/5d343528-6e9f-4578-b523-f71e6f3a6730" />
+
 
 ### ⚙️ General Settings
 
@@ -79,7 +86,8 @@ Intelligent bedtime notifications to help maintain healthy sleep schedules.
 - **Preview functionality**: Test overlays with current settings before committing
 - **Global alerts toggle**: Master switch to enable/disable all reminders
 
-<img width="600" alt="image" src="https://github.com/user-attachments/assets/1e55f12e-2e30-44bf-955d-1fe8cb0bf035" />
+<img width="948" height="799" alt="image" src="https://github.com/user-attachments/assets/bd5df216-b556-4eef-9af1-083891f1a049" />
+
 
 ### 🎥 Presentation Mode Detection (NEW)
 
@@ -113,7 +121,8 @@ Add audio feedback to your reminders for better awareness.
 - **Quick access**: Single click to open settings
 - **Always available**: Discrete presence in your menu bar
 
-<img width="326" height="343" alt="image" src="https://github.com/user-attachments/assets/f6a2960d-d0f1-4702-a20c-4eaa53bd18db" />
+<img width="284" height="301" alt="image" src="https://github.com/user-attachments/assets/d47f0fef-6c9b-4404-97c3-49a13cdc3a13" />
+
 
 ## Requirements
 
