@@ -141,6 +141,48 @@ struct OverlayView: View {
                                 }
                             }
                         }
+
+                        // Power buttons
+                        HStack(spacing: 16) {
+                            UIButton(
+                                action: {
+                                    do {
+                                        try EventService.send(event: .logoutUser)
+                                    } catch {
+                                        print("Error logging out: \(error.localizedDescription)")
+                                    }
+                                },
+                                destructive: true,
+                                label: "Log Out",
+                                icon: "rectangle.portrait.and.arrow.right",
+                                width: 140
+                            )
+
+                            UIButton(
+                                action: {
+                                    EventService.Sleep()
+                                },
+                                label: "Sleep",
+                                icon: "lock",
+                                width: 140,
+                                
+                            )
+
+                            UIButton(
+                                action: {
+                                    do {
+                                        try EventService.send(event: .shutdownComputer)
+                                    } catch {
+                                        print("Error shutting down: \(error.localizedDescription)")
+                                    }
+                                },
+                                destructive: true,
+                                label: "Shut Down",
+                                icon: "power",
+                                width: 140
+                            )
+                        }
+                        .padding(.top, 30)
                     }
 
                     Spacer()

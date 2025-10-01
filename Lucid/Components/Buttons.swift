@@ -9,11 +9,13 @@ struct UIButton: View {
     let width: CGFloat?
     let height: CGFloat?
     let align: Alignment?
+    let destructive: Bool
 
     @State private var isHovered = false
 
     init(
         action: @escaping () -> Void,
+        destructive: Bool = false,
         label: String? = nil,
         icon: String? = nil,
         width: CGFloat? = nil,
@@ -21,6 +23,7 @@ struct UIButton: View {
         align: Alignment? = nil
     ) {
         self.action = action
+        self.destructive = destructive
         self.label = label
         self.icon = icon
         self.width = width
@@ -47,7 +50,10 @@ struct UIButton: View {
             }
             .padding(Style.Layout.padding)
             .frame(width: width, height: height ?? Style.Button.height)
-            .background(isHovered ? Style.Button.bg.opacity(1.5) : Style.Button.bg)
+            .background(
+                isHovered && destructive ? Color.red.opacity(0.2) :
+                isHovered ? Style.Button.bg.opacity(1.5) : Style.Button.bg
+            )
             .clipShape(
                 RoundedRectangle(cornerRadius: Style.Layout.cornerRadius)
             )
@@ -57,6 +63,7 @@ struct UIButton: View {
             .overlay(
                 RoundedRectangle(cornerRadius: Style.Layout.cornerRadius)
                     .stroke(
+                        isHovered && destructive ? Color.red :
                         isHovered ? Style.Button.border.opacity(1.5) : Style.Button.border,
                         lineWidth: Style.Layout.borderWidth
                     )
