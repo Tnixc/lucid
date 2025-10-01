@@ -1,8 +1,9 @@
+
+  <img width="100" height="100" alt="Icon-1024" src="https://github.com/user-attachments/assets/05a6144e-92f0-4848-850e-a19777368a05" />
+
 # Lucid
 
 A macOS menu bar application designed to help reduce eye strain, maintain good posture, and encourage healthy work habits through customizable reminders and overlays.
-
-![App Icon](./screenshots/app-icon.png)
 
 ## Features
 
@@ -16,7 +17,8 @@ Periodic full-screen overlay reminders to give your eyes a rest using the 20-20-
 - **Skip functionality**: Randomly positioned skip button to prevent muscle memory
 - **Keyboard shortcuts**: Dismiss overlays with a customizable hotkey
 
-![Eye Strain Reminder](./screenshots/eye-strain-reminder.png)
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/a2d0891b-9598-4d55-b88b-fce57cf9d174" />
+
 
 ### ✨ Mini Overlay Reminders
 
@@ -35,7 +37,8 @@ Brief, non-intrusive animated reminders that appear at the bottom of your screen
   - Deep breath
   - Look away
 
-![Mini Overlay](./screenshots/mini-overlay.png)
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/97620a27-a63e-4942-843b-bc162a04bfe7" />
+
 
 ### 🌙 Bedtime Reminders
 
@@ -47,7 +50,8 @@ Intelligent bedtime notifications to help maintain healthy sleep schedules.
 - **Auto-dismiss option**: Choose whether overlays auto-dismiss or require manual action
 - **Custom messaging**: Personalize title and message for bedtime notifications
 
-![Bedtime Settings](./screenshots/bedtime-settings.png)
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/70699ef4-88ef-4ec3-a536-82cb0c136f89" />
+
 
 ### ⚙️ General Settings
 
@@ -62,7 +66,8 @@ Intelligent bedtime notifications to help maintain healthy sleep schedules.
 - **Keyboard shortcuts**: Customizable hotkey to dismiss any active overlay
 - **Preview functionality**: Test overlays with current settings before committing
 
-![General Settings](./screenshots/general-settings.png)
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/1e55f12e-2e30-44bf-955d-1fe8cb0bf035" />
+
 
 ### 📊 Menu Bar Integration
 
@@ -70,7 +75,8 @@ Intelligent bedtime notifications to help maintain healthy sleep schedules.
 - **Quick access**: Single click to open settings
 - **Always available**: Discrete presence in your menu bar
 
-![Menu Bar](./screenshots/menu-bar.png)
+<img width="326" height="343" alt="image" src="https://github.com/user-attachments/assets/f6a2960d-d0f1-4702-a20c-4eaa53bd18db" />
+
 
 ## Requirements
 
@@ -119,7 +125,6 @@ open EyeStrainApp.xcodeproj
 
 ### Dependencies
 
-- [SQLite.swift](https://github.com/stephencelis/SQLite.swift) (v0.15.4+) - Database management
 - [SettingsAccess](https://github.com/orchetect/SettingsAccess) (v2.1.0+) - Settings window utilities
 - [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) (v2.4.0+) - Keyboard shortcut management
 
@@ -197,19 +202,18 @@ All settings are stored in `UserDefaults` with the following keys:
 
 ### Settings Window
 
-![Settings Overview](./screenshots/settings-overview.png)
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/dedc3e06-b5ae-45e9-87f5-7604b41a020b" />
+
 
 ### Eye Strain Settings
 
-![Eye Strain Settings](./screenshots/eye-strain-settings.png)
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/92415ed9-32e9-45c2-b91b-1a6aa223ad54" />
+
 
 ### Mini Overlay Settings
 
-![Mini Overlay Settings](./screenshots/mini-overlay-settings.png)
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/4a5c4e1f-e701-4944-99d7-7799b57b2f07" />
 
-### Active Overlays
-
-![Active Reminder](./screenshots/active-reminder.png)
 
 ## Contributing
 
