@@ -88,7 +88,7 @@ Intelligent bedtime notifications to help maintain healthy sleep schedules.
 ### Option 1: Download Pre-built Binary
 
 1. Download the latest release from the [Releases](../../releases) page
-2. Move `EyeStrainApp.app` to your Applications folder
+2. Move `Lucid.app` to your Applications folder
 3. Launch the app
 4. Grant necessary permissions when prompted
 
@@ -100,7 +100,7 @@ git clone https://github.com/yourusername/swift-macos-template.git
 cd swift-macos-template
 
 # Open in Xcode
-open EyeStrainApp.xcodeproj
+open Lucid.xcodeproj
 
 # Build and run (⌘R)
 ```
@@ -131,8 +131,8 @@ open EyeStrainApp.xcodeproj
 ## Project Structure
 
 ```
-EyeStrainApp/
-├── EyeStrainApp.swift          # App entry point
+Lucid/
+├── Lucid.swift                 # App entry point
 ├── MainScene.swift             # Main scene configuration
 ├── Models/
 │   └── AppState.swift          # Application state management

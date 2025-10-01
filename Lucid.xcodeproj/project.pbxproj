@@ -12,11 +12,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4180AEAA2839753E0054FEA9 /* EyeStrainApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EyeStrainApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4180AEAA2839753E0054FEA9 /* Lucid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lucid.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		3937B4C02E8C0F7300FB8682 /* EyeStrainApp */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = EyeStrainApp; sourceTree = "<group>"; };
+		3937B4C02E8C0F7300FB8682 /* Lucid */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Lucid; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,7 +35,7 @@
 		4180AEA12839753E0054FEA9 = {
 			isa = PBXGroup;
 			children = (
-				3937B4C02E8C0F7300FB8682 /* EyeStrainApp */,
+				3937B4C02E8C0F7300FB8682 /* Lucid */,
 				4180AEAB2839753E0054FEA9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,7 +43,7 @@
 		4180AEAB2839753E0054FEA9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4180AEAA2839753E0054FEA9 /* EyeStrainApp.app */,
+				4180AEAA2839753E0054FEA9 /* Lucid.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -51,9 +51,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		4180AEA92839753E0054FEA9 /* EyeStrainApp */ = {
+		4180AEA92839753E0054FEA9 /* Lucid */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4180AEB92839753F0054FEA9 /* Build configuration list for PBXNativeTarget "EyeStrainApp" */;
+			buildConfigurationList = 4180AEB92839753F0054FEA9 /* Build configuration list for PBXNativeTarget "Lucid" */;
 			buildPhases = (
 				4180AEA62839753E0054FEA9 /* Sources */,
 				4180AEA72839753E0054FEA9 /* Frameworks */,
@@ -64,11 +64,11 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				3937B4C02E8C0F7300FB8682 /* EyeStrainApp */,
+				3937B4C02E8C0F7300FB8682 /* Lucid */,
 			);
-			name = EyeStrainApp;
+			name = Lucid;
 			productName = SidebarApp;
-			productReference = 4180AEAA2839753E0054FEA9 /* EyeStrainApp.app */;
+			productReference = 4180AEAA2839753E0054FEA9 /* Lucid.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -89,7 +89,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 4180AEA52839753E0054FEA9 /* Build configuration list for PBXProject "EyeStrainApp" */;
+			buildConfigurationList = 4180AEA52839753E0054FEA9 /* Build configuration list for PBXProject "Lucid" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -106,7 +106,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				4180AEA92839753E0054FEA9 /* EyeStrainApp */,
+				4180AEA92839753E0054FEA9 /* Lucid */,
 			);
 		};
 /* End PBXProject section */
@@ -257,12 +257,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = EyeStrainApp/EyeStrainApp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Lucid/Lucid.entitlements;
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = EyeStrainApp/Assets.xcassets;
+				DEVELOPMENT_ASSET_PATHS = Lucid/Assets.xcassets;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -278,7 +278,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.enochlau.EyeStrainApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.enochlau.Lucid;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -292,12 +292,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = EyeStrainApp/EyeStrainApp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Lucid/Lucid.entitlements;
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = EyeStrainApp/Assets.xcassets;
+				DEVELOPMENT_ASSET_PATHS = Lucid/Assets.xcassets;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -313,7 +313,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.enochlau.EyeStrainApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.enochlau.Lucid;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -324,7 +324,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4180AEA52839753E0054FEA9 /* Build configuration list for PBXProject "EyeStrainApp" */ = {
+		4180AEA52839753E0054FEA9 /* Build configuration list for PBXProject "Lucid" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4180AEB72839753F0054FEA9 /* Debug */,
@@ -333,7 +333,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4180AEB92839753F0054FEA9 /* Build configuration list for PBXNativeTarget "EyeStrainApp" */ = {
+		4180AEB92839753F0054FEA9 /* Build configuration list for PBXNativeTarget "Lucid" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4180AEBA2839753F0054FEA9 /* Debug */,

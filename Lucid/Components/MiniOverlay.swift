@@ -1,6 +1,6 @@
 //
 //  MiniOverlay.swift
-//  EyeStrainApp
+//  Lucid
 //
 //  A lightweight, non-intrusive overlay component for displaying brief text messages.
 //

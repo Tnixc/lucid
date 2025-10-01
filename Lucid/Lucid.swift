@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct EyeStrainApp: App {
+struct Lucid: App {
     @StateObject private var menuBarModel = MenuBarModel()
     var body: some Scene {
         MainScene()
