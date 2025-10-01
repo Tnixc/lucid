@@ -2,6 +2,13 @@
 
 # Lucid
 
+
+
+https://github.com/user-attachments/assets/8241efe4-3ddc-460c-bddc-9a2155a73f04
+
+###### please ignore the artifacting of the background, it's from the recording.
+
+
 A macOS menu bar application designed to help reduce eye strain, maintain good posture, and encourage healthy work habits through customizable reminders and overlays.
 
 ## ✨ Key Features
