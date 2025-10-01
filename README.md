@@ -1,9 +1,17 @@
-
   <img width="100" height="100" alt="Icon-1024" src="https://github.com/user-attachments/assets/05a6144e-92f0-4848-850e-a19777368a05" />
 
 # Lucid
 
 A macOS menu bar application designed to help reduce eye strain, maintain good posture, and encourage healthy work habits through customizable reminders and overlays.
+
+## ✨ Key Features
+
+- 🔔 **Eye Strain Reminders** - Full-screen overlays following the 20-20-20 rule
+- ✨ **Mini Overlay Reminders** - Non-intrusive animated wellness reminders
+- 🌙 **Bedtime Reminders** - Smart sleep schedule notifications
+- 🎥 **Presentation Mode** - Auto-pause during screen sharing (NEW)
+- 🔊 **Sound Effects** - Customizable audio notifications (NEW)
+- 🎨 **Full Customization** - Colors, timing, sounds, and more
 
 ## Features
 
@@ -17,8 +25,10 @@ Periodic full-screen overlay reminders to give your eyes a rest using the 20-20-
 - **Skip functionality**: Randomly positioned skip button to prevent muscle memory
 - **Keyboard shortcuts**: Dismiss overlays with a customizable hotkey
 
-<img width="600" alt="image" src="https://github.com/user-attachments/assets/a2d0891b-9598-4d55-b88b-fce57cf9d174" />
+- **Enable toggle**: Turn eye strain reminders on/off
+- **Preview button**: Test reminders with current settings
 
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/a2d0891b-9598-4d55-b88b-fce57cf9d174" />
 
 ### ✨ Mini Overlay Reminders
 
@@ -29,6 +39,9 @@ Brief, non-intrusive animated reminders that appear at the bottom of your screen
 - **SF Symbol icons**: Choose from a variety of wellness-themed icons
 - **Adjustable timing**: Control both animation and display duration
 - **Multi-screen support**: Appears on all connected displays simultaneously
+- **Custom colors**: Choose background and foreground colors
+- **Vertical offset**: Adjust distance from bottom of screen
+- **Enable toggle**: Turn mini overlays on/off
 - **Preset suggestions**: Quick access to common wellness reminders:
   - Posture check
   - Stay hydrated
@@ -39,7 +52,6 @@ Brief, non-intrusive animated reminders that appear at the bottom of your screen
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/97620a27-a63e-4942-843b-bc162a04bfe7" />
 
-
 ### 🌙 Bedtime Reminders
 
 Intelligent bedtime notifications to help maintain healthy sleep schedules.
@@ -49,9 +61,9 @@ Intelligent bedtime notifications to help maintain healthy sleep schedules.
 - **Configurable intervals**: Control how often reminders repeat
 - **Auto-dismiss option**: Choose whether overlays auto-dismiss or require manual action
 - **Custom messaging**: Personalize title and message for bedtime notifications
+- **Persistent mode**: Continuously check and show overlay if past bedtime (NEW)
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/70699ef4-88ef-4ec3-a536-82cb0c136f89" />
-
 
 ### ⚙️ General Settings
 
@@ -65,9 +77,35 @@ Intelligent bedtime notifications to help maintain healthy sleep schedules.
 - **Click to dismiss**: Optional click-to-dismiss functionality for overlays
 - **Keyboard shortcuts**: Customizable hotkey to dismiss any active overlay
 - **Preview functionality**: Test overlays with current settings before committing
+- **Global alerts toggle**: Master switch to enable/disable all reminders
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/1e55f12e-2e30-44bf-955d-1fe8cb0bf035" />
 
+### 🎥 Presentation Mode Detection (NEW)
+
+Automatically pauses all reminders when you're presenting or screen sharing to avoid embarrassing interruptions.
+
+- **Auto-detection**: Monitors for active screen sharing and presentation apps
+- **Supported apps**: Zoom, Teams, Meet, Webex, Discord, Skype, and more
+- **Presentation software**: Keynote, PowerPoint, Google Slides, Prezi
+- **Fullscreen detection**: Recognizes when apps are in presentation mode
+- **Zero configuration**: Works automatically in the background
+- **Toggleable**: Can be disabled in General settings if needed
+
+**Supported Applications:**
+
+- Video conferencing: Zoom, Microsoft Teams, Google Meet, Webex, Skype, Discord, RingCentral, GoToMeeting, BlueJeans
+- Presentation: Keynote, PowerPoint, Google Slides, Prezi, PDF Expert, Preview
+
+### 🔊 Sound Effects (NEW)
+
+Add audio feedback to your reminders for better awareness.
+
+- **10 system sounds**: Glass, Hero, Morse, Ping, Pop, Purr, Sosumi, Submarine, Tink, or None
+- **Volume control**: Adjustable from 0% to 100%
+- **Test button**: Preview sounds before selecting
+- **Smart playback**: Only plays for scheduled reminders (not preview buttons)
+- **Respects presentation mode**: No sounds during presentations or when settings are open
 
 ### 📊 Menu Bar Integration
 
@@ -76,7 +114,6 @@ Intelligent bedtime notifications to help maintain healthy sleep schedules.
 - **Always available**: Discrete presence in your menu bar
 
 <img width="326" height="343" alt="image" src="https://github.com/user-attachments/assets/f6a2960d-d0f1-4702-a20c-4eaa53bd18db" />
-
 
 ## Requirements
 
@@ -155,7 +192,9 @@ Lucid/
 │   ├── SettingItems.swift      # Settings UI components
 │   └── InfoBox.swift           # Info box component
 ├── Services/
-│   └── Notifier.swift          # Notification scheduling service
+│   ├── Notifier.swift              # Notification scheduling service
+│   ├── PresentationModeDetector.swift  # Screen sharing detection (NEW)
+│   └── SoundManager.swift          # Sound effect management (NEW)
 └── Utilities/
     └── Styles.swift            # Shared styling constants
 ```
@@ -172,6 +211,7 @@ All settings are stored in `UserDefaults` with the following keys:
 
 ### Eye Strain Settings
 
+- `eyeStrainEnabled`: Boolean
 - `eyeStrainInterval`: Integer (minutes)
 - `eyeStrainTitle`: String
 - `eyeStrainMessage`: String
@@ -185,6 +225,10 @@ All settings are stored in `UserDefaults` with the following keys:
 - `miniOverlayDuration`: Double (seconds)
 - `miniOverlayHoldDuration`: Double (seconds)
 - `miniOverlayInterval`: Integer (minutes)
+- `miniOverlayBackgroundColor`: Data (NSColor archived)
+- `miniOverlayForegroundColor`: Data (NSColor archived)
+- `miniOverlayUseCustomColors`: Boolean
+- `miniOverlayVerticalOffset`: Integer (pixels)
 
 ### Bedtime Settings
 
@@ -197,6 +241,14 @@ All settings are stored in `UserDefaults` with the following keys:
 - `bedtimeRepeatReminders`: Boolean
 - `bedtimeRepeatInterval`: Integer (minutes)
 - `bedtimeAutoDismiss`: Boolean
+- `bedtimePersistent`: Boolean
+
+### Sound & Presentation Settings (NEW)
+
+- `soundEffectsEnabled`: Boolean
+- `reminderSoundEffect`: String (sound name)
+- `soundEffectsVolume`: Double (0.0-1.0)
+- `disableDuringPresentation`: Boolean
 
 ## Screenshots
 
@@ -204,16 +256,13 @@ All settings are stored in `UserDefaults` with the following keys:
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/dedc3e06-b5ae-45e9-87f5-7604b41a020b" />
 
-
 ### Eye Strain Settings
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/92415ed9-32e9-45c2-b91b-1a6aa223ad54" />
 
-
 ### Mini Overlay Settings
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/4a5c4e1f-e701-4944-99d7-7799b57b2f07" />
-
 
 ## Contributing
 
@@ -225,19 +274,35 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+## Recent Updates
+
+### Version 1.1.0 (Latest)
+
+- ✅ **Presentation Mode Detection** - Auto-pause during screen sharing
+- ✅ **Sound Effects** - 10 customizable notification sounds
+- ✅ **Enhanced Mini Overlays** - Custom colors and vertical offset
+- ✅ **Eye Strain Toggle** - Enable/disable eye strain reminders
+- ✅ **Persistent Bedtime Mode** - Continuous bedtime monitoring
+- ✅ **Improved Animation** - Smoother mini overlay transitions
+- ✅ **Smart Behavior** - Respects settings window and presentation state
+
 ## Known Issues
 
 - Skip button position randomization is intentional to prevent muscle memory development
+- Presentation detection requires apps to be active/frontmost
+- Some web-based conferencing (in browsers) may not be detected
 
 ## Future Enhancements
 
 - [ ] Statistics tracking for reminder engagement
-- [ ] Multiple reminder profiles
-- [ ] Focus mode integration
+- [ ] Multiple reminder profiles (work, home, weekend)
 - [ ] Pomodoro timer integration
+- [ ] Hydration reminders
+- [ ] Stretch routine reminders with guided exercises
+- [ ] Calendar integration for smart scheduling
 - [ ] Export/import settings
-- [ ] Dark mode specific customizations
-- [ ] Sound notifications
+- [ ] Custom sound upload
+- [ ] Activity detection improvements
 
 ## License
 
@@ -254,4 +319,10 @@ For questions, issues, or feedback:
 
 - Built with [SwiftUI](https://developer.apple.com/xcode/swiftui/)
 - Icons from [SF Symbols](https://developer.apple.com/sf-symbols/)
-- Dependencies: SQLite.swift, SettingsAccess, KeyboardShortcuts
+- Dependencies: SettingsAccess, KeyboardShortcuts
+
+---
+
+## 📖 Additional Documentation
+
+For detailed feature documentation, see [FEATURES.md](FEATURES.md)

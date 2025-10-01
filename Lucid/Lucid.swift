@@ -53,6 +53,14 @@ struct Lucid: App {
             "miniOverlayHoldDuration": 1.5,
             "miniOverlayVerticalOffset": 60,
 
+            // Sound Effects
+            "soundEffectsEnabled": false,
+            "reminderSoundEffect": "Ping",
+            "soundEffectsVolume": 0.5,
+
+            // Presentation Mode
+            "disableDuringPresentation": true,
+
             // Clock Out
             "clockOutEnabled": false,
             "clockOutUseOverlay": true,

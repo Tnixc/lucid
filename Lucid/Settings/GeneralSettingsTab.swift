@@ -29,6 +29,10 @@ struct GeneralSettingsTab: View {
     @State private var launchAtLogin: Bool
     @State private var overlayMaterial: OverlayMaterial
     @State private var clickToDismiss: Bool
+    @State private var soundEffectsEnabled: Bool
+    @State private var reminderSoundEffect: String
+    @State private var soundEffectsVolume: Double
+    @State private var disableDuringPresentation: Bool
 
     init() {
         let defaults = UserDefaults.standard
@@ -43,6 +47,20 @@ struct GeneralSettingsTab: View {
         _clickToDismiss = State(
             initialValue: defaults.object(forKey: "eyeStrainClickToDismiss")
                 as? Bool ?? true
+        )
+        _soundEffectsEnabled = State(
+            initialValue: defaults.bool(forKey: "soundEffectsEnabled")
+        )
+        _reminderSoundEffect = State(
+            initialValue: defaults.string(forKey: "reminderSoundEffect") ?? "Ping"
+        )
+        _soundEffectsVolume = State(
+            initialValue: defaults.double(forKey: "soundEffectsVolume") != 0
+                ? defaults.double(forKey: "soundEffectsVolume")
+                : 0.5
+        )
+        _disableDuringPresentation = State(
+            initialValue: defaults.object(forKey: "disableDuringPresentation") as? Bool ?? true
         )
     }
 
@@ -115,6 +133,61 @@ struct GeneralSettingsTab: View {
                 )
             }
 
+            SettingItem(
+                title: "Sound Effects",
+                description: "Play a sound when reminders appear.",
+                icon: "speaker.wave.2"
+            ) {
+                Toggle("", isOn: soundEffectsEnabledBinding)
+                    .toggleStyle(.switch)
+            }
+
+            if soundEffectsEnabled {
+                SettingItem(
+                    title: "Sound",
+                    description: "Choose a notification sound.",
+                    icon: "music.note"
+                ) {
+                    Picker("", selection: reminderSoundEffectBinding) {
+                        ForEach(SoundManager.SoundEffect.allCases, id: \.rawValue) { sound in
+                            Text(sound.displayName).tag(sound.rawValue)
+                        }
+                    }
+                    .frame(width: 150)
+                    .labelsHidden()
+                }
+
+                SettingItem(
+                    title: "Volume",
+                    description: "Adjust sound effect volume.",
+                    icon: "speaker.wave.1"
+                ) {
+                    HStack(spacing: 8) {
+                        Slider(value: soundEffectsVolumeBinding, in: 0.0 ... 1.0, step: 0.1)
+                            .frame(width: 150)
+
+                        UIButton(
+                            action: {
+                                if let sound = SoundManager.SoundEffect(rawValue: reminderSoundEffect) {
+                                    SoundManager.shared.playSound(sound)
+                                }
+                            },
+                            label: "Test",
+                            width: 60
+                        )
+                    }
+                }
+            }
+
+            SettingItem(
+                title: "Disable During Presentations",
+                description: "Automatically pause reminders during screen sharing or presentations.",
+                icon: "rectangle.on.rectangle"
+            ) {
+                Toggle("", isOn: disableDuringPresentationBinding)
+                    .toggleStyle(.switch)
+            }
+
             InfoBox {
                 HStack {
                     Image(systemName: "info.circle.fill")
@@ -122,6 +195,7 @@ struct GeneralSettingsTab: View {
                     Spacer()
                 }
             }
+
             Spacer()
             InfoBox {
                 HStack {
@@ -164,6 +238,46 @@ struct GeneralSettingsTab: View {
             set: {
                 self.clickToDismiss = $0
                 UserDefaults.standard.set($0, forKey: "eyeStrainClickToDismiss")
+            }
+        )
+    }
+
+    private var soundEffectsEnabledBinding: Binding<Bool> {
+        Binding(
+            get: { self.soundEffectsEnabled },
+            set: {
+                self.soundEffectsEnabled = $0
+                UserDefaults.standard.set($0, forKey: "soundEffectsEnabled")
+            }
+        )
+    }
+
+    private var reminderSoundEffectBinding: Binding<String> {
+        Binding(
+            get: { self.reminderSoundEffect },
+            set: {
+                self.reminderSoundEffect = $0
+                UserDefaults.standard.set($0, forKey: "reminderSoundEffect")
+            }
+        )
+    }
+
+    private var soundEffectsVolumeBinding: Binding<Double> {
+        Binding(
+            get: { self.soundEffectsVolume },
+            set: {
+                self.soundEffectsVolume = $0
+                UserDefaults.standard.set($0, forKey: "soundEffectsVolume")
+            }
+        )
+    }
+
+    private var disableDuringPresentationBinding: Binding<Bool> {
+        Binding(
+            get: { self.disableDuringPresentation },
+            set: {
+                self.disableDuringPresentation = $0
+                UserDefaults.standard.set($0, forKey: "disableDuringPresentation")
             }
         )
     }

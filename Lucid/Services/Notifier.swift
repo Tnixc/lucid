@@ -1,3 +1,4 @@
+import AVFoundation
 import Foundation
 import KeyboardShortcuts
 import SwiftUI
@@ -33,9 +34,19 @@ class Notifier {
             return
         }
 
+        // Skip if presentation mode is active (unless this is a preview)
+        guard isPreview || !PresentationModeDetector.shared.isPresentationModeActive else {
+            return
+        }
+
         // Check if alerts are enabled (skip check for previews)
         guard isPreview || defaults.bool(forKey: "alertsEnabled") != false else {
             return
+        }
+
+        // Play sound if enabled
+        if !isPreview {
+            SoundManager.shared.playReminderSound()
         }
 
         // Close any existing overlay windows
@@ -77,9 +88,19 @@ class Notifier {
             return
         }
 
+        // Skip if presentation mode is active (unless this is a preview)
+        guard isPreview || !PresentationModeDetector.shared.isPresentationModeActive else {
+            return
+        }
+
         // Check if alerts are enabled (skip check for previews)
         guard isPreview || defaults.bool(forKey: "alertsEnabled") != false else {
             return
+        }
+
+        // Play sound if enabled
+        if !isPreview {
+            SoundManager.shared.playReminderSound()
         }
 
         // Close any existing mini overlay windows
