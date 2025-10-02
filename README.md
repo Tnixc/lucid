@@ -62,8 +62,7 @@ Brief, non-intrusive animated reminders that appear at the bottom of your screen
   - Look away
 
 
-
-https://github.com/user-attachments/assets/88542cdf-c534-40a6-8461-5bb878fd7adb
+https://github.com/user-attachments/assets/3f12a918-45c2-4001-b6ce-2f29e42740d1
 
 
 
