@@ -1,4 +1,6 @@
+import Foundation
 import SwiftUI
+import AppKit
 
 // Local constants
 private enum LocalConstants {
@@ -14,6 +16,7 @@ struct SettingsWindow: View {
     }
 
     @State private var selectedTab: Tabs = .general
+    @StateObject private var windowObserver = SettingsWindowObserver()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -27,12 +30,7 @@ struct SettingsWindow: View {
                 Spacer()
             }
         }
-        .onAppear {
-            AppState.shared.isSettingsWindowOpen = true
-        }
-        .onDisappear {
-            AppState.shared.isSettingsWindowOpen = false
-        }
+        .background(WindowAccessor(windowObserver: windowObserver))
     }
 
     var sidebar: some View {
@@ -116,6 +114,73 @@ struct SettingsTabButton: View {
                 height: Style.Button.heightSM,
                 align: .leading
             )
+        }
+    }
+}
+
+// MARK: - Window Focus Observer
+
+class SettingsWindowObserver: NSObject, ObservableObject {
+    weak var window: NSWindow? {
+        didSet {
+            setupObservers()
+        }
+    }
+    
+    private func setupObservers() {
+        guard let window = window else { return }
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(windowDidBecomeKey),
+            name: NSWindow.didBecomeKeyNotification,
+            object: window
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(windowDidResignKey),
+            name: NSWindow.didResignKeyNotification,
+            object: window
+        )
+    }
+    
+    @objc private func windowDidBecomeKey() {
+        AppState.shared.isSettingsWindowFocused = true
+    }
+    
+    @objc private func windowDidResignKey() {
+        AppState.shared.isSettingsWindowFocused = false
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        AppState.shared.isSettingsWindowFocused = false
+    }
+}
+
+// MARK: - Window Accessor
+
+struct WindowAccessor: NSViewRepresentable {
+    let windowObserver: SettingsWindowObserver
+    
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        DispatchQueue.main.async {
+            if let window = view.window {
+                self.windowObserver.window = window
+                // Check initial focus state
+                if window.isKeyWindow {
+                    AppState.shared.isSettingsWindowFocused = true
+                }
+            }
+        }
+        return view
+    }
+    
+    func updateNSView(_ nsView: NSView, context: Context) {
+        if windowObserver.window == nil, let window = nsView.window {
+            windowObserver.window = window
         }
     }
 }

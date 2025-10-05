@@ -2,6 +2,7 @@ import Combine
 import SwiftUI
 
 class MenuBarModel: ObservableObject {
+    private var cancellables = Set<AnyCancellable>()
     @Published var eyeStrainCountdown: String = "20:00"
     @Published var bedtimeCountdown: String = "--:--"
     @Published var miniOverlayCountdown: String = "--:--"
@@ -19,6 +20,16 @@ class MenuBarModel: ObservableObject {
         loadSettings()
         resetAllTimers()
         startTimer()
+        observeOverlayState()
+    }
+    
+    private func observeOverlayState() {
+        // Observe overlay state changes to pause/resume timer
+        AppState.shared.$isOverlayActive
+            .sink { [weak self] _ in
+                // Timer logic will check isOverlayActive before decrementing
+            }
+            .store(in: &cancellables)
     }
     
     private func loadSettings() {
@@ -38,14 +49,21 @@ class MenuBarModel: ObservableObject {
         // Load current settings in case they changed
         loadSettings()
         
+        // Skip countdown updates if overlay is active (paused)
+        let shouldPause = AppState.shared.isOverlayActive
+        
         // Update eye strain timer
-        if eyeStrainEnabled {
+        if eyeStrainEnabled && !shouldPause {
             eyeStrainRemainingTime -= 1
             if eyeStrainRemainingTime <= 0 {
                 notifier.showEyeStrainReminder()
                 let interval = defaults.integer(forKey: "eyeStrainInterval")
                 eyeStrainRemainingTime = TimeInterval(interval) * 60
             }
+        }
+        
+        // Always update display even when paused
+        if eyeStrainEnabled {
             let minutes = Int(eyeStrainRemainingTime) / 60
             let seconds = Int(eyeStrainRemainingTime) % 60
             DispatchQueue.main.async {
@@ -54,12 +72,16 @@ class MenuBarModel: ObservableObject {
         }
         
         // Update mini overlay timer
-        if miniOverlayEnabled {
+        if miniOverlayEnabled && !shouldPause {
             miniOverlayRemainingTime -= 1
             if miniOverlayRemainingTime <= 0 {
                 let interval = defaults.integer(forKey: "miniOverlayInterval")
                 miniOverlayRemainingTime = TimeInterval(interval) * 60
             }
+        }
+        
+        // Always update display even when paused
+        if miniOverlayEnabled {
             let minutes = Int(miniOverlayRemainingTime) / 60
             let seconds = Int(miniOverlayRemainingTime) % 60
             DispatchQueue.main.async {

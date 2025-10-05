@@ -30,7 +30,7 @@ class Notifier {
 
     func showOverlay(title: String, message: String, dismissAfter: TimeInterval, autoDismiss: Bool = true, isPreview: Bool = false) {
         // Skip if settings window is open (unless this is a preview)
-        guard isPreview || !AppState.shared.isSettingsWindowOpen else {
+        guard isPreview || !AppState.shared.isSettingsWindowFocused else {
             return
         }
 
@@ -53,6 +53,9 @@ class Notifier {
         overlayWindows.forEach { $0.close() }
         overlayWindows.removeAll()
 
+        // Mark overlay as active
+        AppState.shared.isOverlayActive = true
+
         // Create an overlay window for each screen
         let screens = NSScreen.screens
         for screen in screens {
@@ -66,6 +69,7 @@ class Notifier {
                     [weak self] in
                     self?.overlayWindows.forEach { $0.close() }
                     self?.overlayWindows.removeAll()
+                    AppState.shared.isOverlayActive = false
                 }
             )
 
@@ -78,13 +82,14 @@ class Notifier {
                 [weak self] in
                 self?.overlayWindows.forEach { $0.close() }
                 self?.overlayWindows.removeAll()
+                AppState.shared.isOverlayActive = false
             }
         }
     }
 
     func showMiniOverlay(text: String, icon: String? = nil, duration: TimeInterval = 3.15, holdDuration: TimeInterval = 1.5, backgroundColor: Color? = nil, foregroundColor: Color? = nil, verticalOffset: CGFloat = 60, isPreview: Bool = false) {
         // Skip if settings window is open (unless this is a preview)
-        guard isPreview || !AppState.shared.isSettingsWindowOpen else {
+        guard isPreview || !AppState.shared.isSettingsWindowFocused else {
             return
         }
 
@@ -107,6 +112,9 @@ class Notifier {
         miniOverlayWindows.forEach { $0.close() }
         miniOverlayWindows.removeAll()
 
+        // Mark overlay as active
+        AppState.shared.isOverlayActive = true
+
         // Create a mini overlay window for each screen
         let screens = NSScreen.screens
         for screen in screens {
@@ -123,6 +131,7 @@ class Notifier {
                     [weak self] in
                     self?.miniOverlayWindows.forEach { $0.close() }
                     self?.miniOverlayWindows.removeAll()
+                    AppState.shared.isOverlayActive = false
                 }
             )
 
@@ -193,7 +202,7 @@ class Notifier {
 
     private func checkPersistentBedtime() {
         // Skip if settings window is open
-        guard !AppState.shared.isSettingsWindowOpen else {
+        guard !AppState.shared.isSettingsWindowFocused else {
             return
         }
 
@@ -250,7 +259,7 @@ class Notifier {
 
     func checkMiniOverlayTime() {
         // Skip if settings window is open
-        guard !AppState.shared.isSettingsWindowOpen else {
+        guard !AppState.shared.isSettingsWindowFocused else {
             return
         }
 
@@ -305,7 +314,7 @@ class Notifier {
 
     func checkClockOutTime() {
         // Skip if settings window is open
-        guard !AppState.shared.isSettingsWindowOpen else {
+        guard !AppState.shared.isSettingsWindowFocused else {
             return
         }
 
@@ -354,7 +363,7 @@ class Notifier {
 
     func checkBedtimeTime() {
         // Skip if settings window is open
-        guard !AppState.shared.isSettingsWindowOpen else {
+        guard !AppState.shared.isSettingsWindowFocused else {
             return
         }
 
