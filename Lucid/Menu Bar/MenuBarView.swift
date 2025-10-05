@@ -7,38 +7,34 @@ struct MenuBarView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            // Main Status Card
-            VStack(spacing: 12) {
-                HStack(spacing: 12) {
-                    // Large icon with gradient background
-                    ZStack {
-                        Circle()
-                            .fill(
-                                Style.Colors.barFill
-                            ).opacity(0.3)
-                            .frame(width: 52, height: 52)
-
-                        Image(systemName: "eye.fill")
-                            .font(.system(size: 24, weight: .medium))
-                            .foregroundColor(.white)
-                    }
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Next Break")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundStyle(.secondary)
-                            .textCase(.uppercase)
-                            .tracking(0.5)
-
-                        Text(menuBarModel.countdown)
-                            .font(.system(size: 26, weight: .semibold))
-                            .foregroundStyle(.primary)
-                            .monospacedDigit()
-                    }
-
-                    Spacer()
-                }
-                .padding(16)
+            // Timers Card
+            VStack(spacing: 0) {
+                TimerRow(
+                    icon: "eye.fill",
+                    label: "Eye Strain Break",
+                    countdown: menuBarModel.eyeStrainCountdown,
+                    enabled: menuBarModel.eyeStrainEnabled
+                )
+                
+                Divider()
+                    .padding(.horizontal, 16)
+                
+                TimerRow(
+                    icon: "moon.fill",
+                    label: "Bedtime",
+                    countdown: menuBarModel.bedtimeCountdown,
+                    enabled: menuBarModel.bedtimeEnabled
+                )
+                
+                Divider()
+                    .padding(.horizontal, 16)
+                
+                TimerRow(
+                    icon: "sparkles",
+                    label: "Mini Reminder",
+                    countdown: menuBarModel.miniOverlayCountdown,
+                    enabled: menuBarModel.miniOverlayEnabled
+                )
             }
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -104,6 +100,51 @@ struct MenuBarView: View {
             VisualEffect()
                 .ignoresSafeArea()
         )
+    }
+}
+
+// MARK: - Timer Row Component
+
+struct TimerRow: View {
+    let icon: String
+    let label: String
+    let countdown: String
+    let enabled: Bool
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(enabled ? Color.secondary.opacity(0.4) : Color.secondary.opacity(0.15))
+                    .frame(width: 40, height: 40)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(enabled ? .white : .secondary)
+            }
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(label)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(enabled ? .primary : .secondary)
+                
+                if !enabled {
+                    Text("Disabled")
+                        .font(.system(size: 10, weight: .regular))
+                        .foregroundStyle(.tertiary)
+                }
+            }
+            
+            Spacer()
+            
+            Text(countdown)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(enabled ? .primary : .secondary)
+                .monospacedDigit()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .opacity(enabled ? 1.0 : 0.5)
     }
 }
 

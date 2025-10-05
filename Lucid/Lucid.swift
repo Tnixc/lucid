@@ -11,7 +11,7 @@ struct Lucid: App {
     var body: some Scene {
         MainScene()
 
-        MenuBarExtra(menuBarModel.countdown) {
+        MenuBarExtra(menuBarModel.eyeStrainCountdown) {
             MenuBarView()
                 .environmentObject(menuBarModel)
                 .background(.clear)
