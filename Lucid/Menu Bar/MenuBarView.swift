@@ -15,20 +15,20 @@ struct MenuBarView: View {
                     countdown: menuBarModel.eyeStrainCountdown,
                     enabled: menuBarModel.eyeStrainEnabled
                 )
-                
+
                 Divider()
                     .padding(.horizontal, 16)
-                
+
                 TimerRow(
                     icon: "moon.fill",
                     label: "Bedtime",
                     countdown: menuBarModel.bedtimeCountdown,
                     enabled: menuBarModel.bedtimeEnabled
                 )
-                
+
                 Divider()
                     .padding(.horizontal, 16)
-                
+
                 TimerRow(
                     icon: "sparkles",
                     label: "Mini Reminder",
@@ -110,33 +110,33 @@ struct TimerRow: View {
     let label: String
     let countdown: String
     let enabled: Bool
-    
+
     var body: some View {
         HStack(spacing: 12) {
             ZStack {
                 Circle()
                     .fill(enabled ? Color.secondary.opacity(0.4) : Color.secondary.opacity(0.15))
                     .frame(width: 40, height: 40)
-                
+
                 Image(systemName: icon)
                     .font(.system(size: 18, weight: .medium))
                     .foregroundColor(enabled ? .white : .secondary)
             }
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(label)
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(enabled ? .primary : .secondary)
-                
+
                 if !enabled {
                     Text("Disabled")
                         .font(.system(size: 10, weight: .regular))
                         .foregroundStyle(.tertiary)
                 }
             }
-            
+
             Spacer()
-            
+
             Text(countdown)
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(enabled ? .primary : .secondary)

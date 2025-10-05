@@ -1,6 +1,6 @@
+import AppKit
 import Foundation
 import SwiftUI
-import AppKit
 
 // Local constants
 private enum LocalConstants {
@@ -126,17 +126,17 @@ class SettingsWindowObserver: NSObject, ObservableObject {
             setupObservers()
         }
     }
-    
+
     private func setupObservers() {
         guard let window = window else { return }
-        
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(windowDidBecomeKey),
             name: NSWindow.didBecomeKeyNotification,
             object: window
         )
-        
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(windowDidResignKey),
@@ -144,15 +144,15 @@ class SettingsWindowObserver: NSObject, ObservableObject {
             object: window
         )
     }
-    
+
     @objc private func windowDidBecomeKey() {
         AppState.shared.isSettingsWindowFocused = true
     }
-    
+
     @objc private func windowDidResignKey() {
         AppState.shared.isSettingsWindowFocused = false
     }
-    
+
     deinit {
         NotificationCenter.default.removeObserver(self)
         AppState.shared.isSettingsWindowFocused = false
@@ -163,8 +163,8 @@ class SettingsWindowObserver: NSObject, ObservableObject {
 
 struct WindowAccessor: NSViewRepresentable {
     let windowObserver: SettingsWindowObserver
-    
-    func makeNSView(context: Context) -> NSView {
+
+    func makeNSView(context _: Context) -> NSView {
         let view = NSView()
         DispatchQueue.main.async {
             if let window = view.window {
@@ -177,8 +177,8 @@ struct WindowAccessor: NSViewRepresentable {
         }
         return view
     }
-    
-    func updateNSView(_ nsView: NSView, context: Context) {
+
+    func updateNSView(_ nsView: NSView, context _: Context) {
         if windowObserver.window == nil, let window = nsView.window {
             windowObserver.window = window
         }
