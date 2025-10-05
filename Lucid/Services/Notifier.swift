@@ -13,7 +13,7 @@ class Notifier {
     private var bedtimeStartTime: Date?
     private var bedtimeEndTime: Date?
     private var lastBedtimeCheck: Date?
-    private var lastBedtimeReminderTime: Date?
+    var lastBedtimeReminderTime: Date?
     private var lastMiniOverlayTime: Date?
     private let defaults = UserDefaults.standard
     private var activeDays: Set<Int> = []
@@ -438,7 +438,7 @@ class Notifier {
         }
     }
 
-    private func isInBedtimeRange(_ date: Date) -> Bool {
+    func isInBedtimeRange(_ date: Date) -> Bool {
         guard let bedtimeStartTime = bedtimeStartTime,
               let bedtimeEndTime = bedtimeEndTime
         else {

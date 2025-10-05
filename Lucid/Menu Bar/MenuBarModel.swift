@@ -26,7 +26,7 @@ class MenuBarModel: ObservableObject {
     private func observeOverlayState() {
         // Observe overlay state changes to pause/resume timer
         AppState.shared.$isOverlayActive
-            .sink { [weak self] _ in
+            .sink { _ in
                 // Timer logic will check isOverlayActive before decrementing
             }
             .store(in: &cancellables)
@@ -89,28 +89,48 @@ class MenuBarModel: ObservableObject {
             }
         }
         
-        // Update bedtime countdown (time until bedtime start)
+        // Update bedtime countdown (time until next overlay during bedtime)
         if bedtimeEnabled {
-            if let startTime = defaults.object(forKey: "bedtimeStartTime") as? Date {
-                let calendar = Calendar.current
-                let now = Date()
-                let startComponents = calendar.dateComponents([.hour, .minute], from: startTime)
-                
-                var nextBedtime = calendar.date(from: calendar.dateComponents([.year, .month, .day], from: now))!
-                nextBedtime = calendar.date(bySettingHour: startComponents.hour ?? 22, minute: startComponents.minute ?? 0, second: 0, of: nextBedtime)!
-                
-                // If bedtime has already passed today, show tomorrow's bedtime
-                if nextBedtime <= now {
-                    nextBedtime = calendar.date(byAdding: .day, value: 1, to: nextBedtime)!
+            let now = Date()
+            let repeatReminders = defaults.bool(forKey: "bedtimeRepeatReminders")
+            let isInBedtime = notifier.isInBedtimeRange(now)
+            
+            // Only show countdown if we're in bedtime range AND repeat is enabled
+            if isInBedtime && repeatReminders {
+                // Calculate time until next overlay
+                if let lastReminderTime = notifier.lastBedtimeReminderTime {
+                    let repeatInterval = TimeInterval(defaults.integer(forKey: "bedtimeRepeatInterval") * 60)
+                    let nextReminderTime = lastReminderTime.addingTimeInterval(repeatInterval)
+                    let timeUntilNext = nextReminderTime.timeIntervalSince(now)
+                    
+                    if timeUntilNext > 0 {
+                        let minutes = Int(timeUntilNext) / 60
+                        let seconds = Int(timeUntilNext) % 60
+                        DispatchQueue.main.async {
+                            self.bedtimeCountdown = String(format: "%02d:%02d", minutes, seconds)
+                        }
+                    } else {
+                        // Next reminder is due now or overdue
+                        DispatchQueue.main.async {
+                            self.bedtimeCountdown = "00:00"
+                        }
+                    }
+                } else {
+                    // First reminder hasn't fired yet, show waiting state
+                    DispatchQueue.main.async {
+                        self.bedtimeCountdown = "--:--"
+                    }
                 }
-                
-                let timeInterval = nextBedtime.timeIntervalSince(now)
-                let hours = Int(timeInterval) / 3600
-                let minutes = (Int(timeInterval) % 3600) / 60
-                
+            } else {
+                // Not in bedtime range or repeat not enabled
                 DispatchQueue.main.async {
-                    self.bedtimeCountdown = String(format: "%02d:%02d", hours, minutes)
+                    self.bedtimeCountdown = "--:--"
                 }
+            }
+        } else {
+            // Bedtime not enabled
+            DispatchQueue.main.async {
+                self.bedtimeCountdown = "--:--"
             }
         }
         
